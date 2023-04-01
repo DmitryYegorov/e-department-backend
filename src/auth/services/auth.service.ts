@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { AuthRepo } from "../repositories/auth.repo";
 import { AuthRegistrationRequestDto } from "../dto/auth-registration-request.dto";
 import * as bcrypt from "bcrypt";
@@ -6,6 +11,8 @@ import { WelcomeNewUserContext } from "../../mail/types/context/welcome-new-user
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { MailService } from "../../mail/mail.service";
+import { AuthLoginRequestDto } from "../dto/auth-login-request.dto";
+import { AuthLoginResponseDto } from "../dto/auth-login-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -17,6 +24,55 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
+
+  async login(input: AuthLoginRequestDto): Promise<AuthLoginResponseDto> {
+    try {
+      const { email, password } = input;
+
+      this.logger.log(
+        `Invoked method login(): ${JSON.stringify({
+          ...input,
+          password: null,
+        })}`,
+      );
+
+      const user = await this.authRepo.getUserByEmail({ email });
+
+      const passwordMatches = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatches || user.activationCode) {
+        throw new UnauthorizedException("Invalid credentials");
+      }
+
+      const [access, refresh] = await Promise.all([
+        this.jwtService.signAsync(
+          { userId: user.id },
+          {
+            secret: this.configService.get("JWT_ACCESS_SECRET"),
+            expiresIn: this.configService.get("JWT_ACCESS_EXPIRES"),
+          },
+        ),
+        this.jwtService.signAsync(
+          { userId: user.id },
+          {
+            secret: this.configService.get("JWT_REFRESH_SECRET"),
+            expiresIn: this.configService.get("JWT_REFRESH_EXPIRES"),
+          },
+        ),
+      ]);
+
+      return { access, refresh, userId: user.id };
+    } catch (error) {
+      this.logger.error(
+        `Failed method login(): ${JSON.stringify({
+          ...input,
+          password: null,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
 
   async register(input: AuthRegistrationRequestDto) {
     try {
@@ -42,7 +98,9 @@ export class AuthService {
         { email: input.email },
         {
           secret: this.configService.getOrThrow("JWT_SECRET"),
-          expiresIn: this.configService.getOrThrow("JWT_ACTIVATION_CODE_EXPIRES"),
+          expiresIn: this.configService.getOrThrow(
+            "JWT_ACTIVATION_CODE_EXPIRES",
+          ),
         },
       );
 
