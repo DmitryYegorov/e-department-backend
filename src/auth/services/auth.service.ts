@@ -14,6 +14,7 @@ import { MailService } from "../../mail/mail.service";
 import { AuthLoginRequestDto } from "../dto/auth-login-request.dto";
 import { AuthLoginResponseDto } from "../dto/auth-login-response.dto";
 import { ConfirmEmailDto } from "../dto/confirm-email.dto";
+import { I18nContext } from "nestjs-i18n";
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,7 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async confirmEmail(input: ConfirmEmailDto): Promise<void> {
+  async confirmEmail(input: ConfirmEmailDto, i18n: I18nContext): Promise<void> {
     try {
       this.logger.log(
         `Invoked method confirmEmail(): ${JSON.stringify(input)}`,
@@ -45,7 +46,7 @@ export class AuthService {
         });
       } else {
         throw new BadRequestException(
-          "User not found or activation code expired",
+          i18n.t("auth.errorMessages.confirmationError"),
         );
       }
     } catch (error) {
@@ -56,7 +57,10 @@ export class AuthService {
     }
   }
 
-  async login(input: AuthLoginRequestDto): Promise<AuthLoginResponseDto> {
+  async login(
+    input: AuthLoginRequestDto,
+    i18n: I18nContext,
+  ): Promise<AuthLoginResponseDto> {
     try {
       const { email, password } = input;
 
@@ -72,7 +76,9 @@ export class AuthService {
       const passwordMatches = await bcrypt.compare(password, user.password);
 
       if (!passwordMatches || user.activationCode) {
-        throw new UnauthorizedException("Invalid credentials");
+        throw new UnauthorizedException(
+          i18n.t("auth.errorMessages.invalidCredentials"),
+        );
       }
 
       const [access, refresh] = await Promise.all([
@@ -105,7 +111,7 @@ export class AuthService {
     }
   }
 
-  async register(input: AuthRegistrationRequestDto) {
+  async register(input: AuthRegistrationRequestDto, i18n: I18nContext) {
     try {
       this.logger.log(
         `Invoked method register(): ${JSON.stringify({
@@ -119,7 +125,7 @@ export class AuthService {
       this.logger.debug({ exists });
 
       if (exists) {
-        throw new BadRequestException("User already exists with that email");
+        throw new BadRequestException(i18n.t("auth.errorMessages.userAlreadyExists"));
       }
 
       const salt = await bcrypt.genSalt();
