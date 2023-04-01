@@ -16,4 +16,9 @@ export class AuthController {
   async loginEmail(@Body() body: AuthLoginRequestDto) {
     return this.service.login(body);
   }
+
+  @Post("/confirm-email")
+  async confirmEmail(@Body() body) {
+    return this.service.confirmEmail(body);
+  }
 }

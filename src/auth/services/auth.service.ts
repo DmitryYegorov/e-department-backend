@@ -13,6 +13,7 @@ import { JwtService } from "@nestjs/jwt";
 import { MailService } from "../../mail/mail.service";
 import { AuthLoginRequestDto } from "../dto/auth-login-request.dto";
 import { AuthLoginResponseDto } from "../dto/auth-login-response.dto";
+import { ConfirmEmailDto } from "../dto/confirm-email.dto";
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,36 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
+
+  async confirmEmail(input: ConfirmEmailDto): Promise<void> {
+    try {
+      this.logger.log(
+        `Invoked method confirmEmail(): ${JSON.stringify(input)}`,
+      );
+
+      const decoded = await this.jwtService.verifyAsync(input.activationCode, {
+        secret: this.configService.get("JWT_SECRET"),
+      });
+
+      const user = await this.authRepo.getUserByEmail({ email: decoded.email });
+
+      if (!!user && user.activationCode == input.activationCode) {
+        await this.authRepo.update(user.id, {
+          activationCode: null,
+          verifiedAt: new Date(),
+        });
+      } else {
+        throw new BadRequestException(
+          "User not found or activation code expired",
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed method confirmEmail(): ${JSON.stringify({ ...input, error })}`,
+      );
+      throw error;
+    }
+  }
 
   async login(input: AuthLoginRequestDto): Promise<AuthLoginResponseDto> {
     try {
