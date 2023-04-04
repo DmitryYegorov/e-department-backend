@@ -13,14 +13,66 @@ datasource db {
 model User {
   id             String    @id @default(value: uuid()) @db.Uuid
   firstName      String    @db.VarChar(255)
-  middleName     String?   @db.VarChar(255)
-  lastName       String    @db.VarChar(255)
+  middleName     String    @db.VarChar(255)
+  lastName       String?   @db.VarChar(255)
   email          String    @unique @db.VarChar(255)
   password       String    @db.VarChar(255)
   type           String    @db.VarChar(125)
   activationCode String?   @db.VarChar(255)
   verifiedAt     DateTime?
   createdAt      DateTime  @default(value: now())
+  Group          Group[]
+  Subject        Subject[]
 
   @@map("user")
+}
+
+model Subject {
+  id        String   @id @default(value: uuid()) @db.Uuid()
+  name      String   @db.VarChar(255)
+  alis      String?  @db.VarChar(255)
+  isActive  Boolean  @default(value: true)
+  teacherId String   @db.Uuid()
+  createdAt DateTime @default(value: now())
+
+  teacher User @relation(fields: [teacherId], references: [id])
+
+  @@map("subject")
+}
+
+model Group {
+  id        String   @id @default(value: uuid()) @db.Uuid()
+  name      String   @db.VarChar(255)
+  isActive  Boolean  @default(value: false)
+  teacherId String   @db.Uuid()
+  createdAt DateTime @default(value: now())
+
+  teacher User      @relation(fields: [teacherId], references: [id])
+  Student Student[]
+
+  @@map("group")
+}
+
+model Student {
+  id         String   @id @default(value: uuid()) @db.Uuid()
+  firstName  String   @db.VarChar(255)
+  middleName String   @db.VarChar(255)
+  lastName   String?  @db.VarChar(255)
+  groupId    String   @db.Uuid
+  isActive   Boolean  @default(value: true)
+  createdAt  DateTime @default(value: now())
+
+  group Group @relation(fields: [groupId], references: [id])
+
+  @@map("student")
+}
+
+model Classes {
+  id        String   @id @default(value: uuid()) @db.Uuid
+  groupId   String   @db.Uuid
+  subjectId String
+  isActive  Boolean  @default(value: true)
+  createdAt DateTime @default(value: now())
+
+  @@map("classes")
 }
