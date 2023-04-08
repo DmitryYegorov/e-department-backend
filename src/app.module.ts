@@ -5,6 +5,7 @@ import { MailModule } from "./mail/mail.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { I18nModule } from "nestjs-i18n";
 import * as path from "path";
+import { SubjectModule } from "./models/subject/subject.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import * as path from "path";
     PrismaModule.register(),
     AuthModule,
     MailModule,
+    SubjectModule,
   ],
   controllers: [],
   providers: [],

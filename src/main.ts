@@ -16,6 +16,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const swaggerConfig = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle("E-Department API")
     .setVersion("1.0")
     .build();

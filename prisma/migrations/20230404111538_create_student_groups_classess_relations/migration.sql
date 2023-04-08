@@ -12,7 +12,7 @@ ALTER COLUMN "lastName" DROP NOT NULL;
 CREATE TABLE "subject" (
     "id" UUID NOT NULL,
     "name" VARCHAR(255) NOT NULL,
-    "alis" VARCHAR(255),
+    "alias" VARCHAR(255),
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "teacherId" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

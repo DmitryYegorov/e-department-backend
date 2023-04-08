@@ -30,7 +30,7 @@ model User {
 model Subject {
   id        String   @id @default(value: uuid()) @db.Uuid()
   name      String   @db.VarChar(255)
-  alis      String?  @db.VarChar(255)
+  alias      String?  @db.VarChar(255)
   isActive  Boolean  @default(value: true)
   teacherId String   @db.Uuid()
   createdAt DateTime @default(value: now())

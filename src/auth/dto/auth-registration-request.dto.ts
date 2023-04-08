@@ -9,15 +9,15 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class AuthRegistrationRequestDto {
   @IsString()
-  @ApiProperty({ type: "string", example: "Ivan" })
+  @ApiProperty({ type: "string", example: "Baranov" })
   readonly firstName: string;
   @IsString()
-  @IsOptional()
-  @ApiProperty({ type: "string", example: "Ivanovich" })
-  readonly middleName?: string;
+  @ApiProperty({ type: "string", example: "Vladislav" })
+  readonly middleName: string;
   @IsString()
-  @ApiProperty({ type: "string", example: "Ivanov" })
-  readonly lastName: string;
+  @IsOptional()
+  @ApiProperty({ type: "string", example: "Anatolievich" })
+  readonly lastName?: string;
   @IsEmail()
   @ApiProperty({ type: "string", example: "teacher@belstu.by" })
   readonly email: string;
