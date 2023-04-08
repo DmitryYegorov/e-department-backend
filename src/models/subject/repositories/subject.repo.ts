@@ -14,4 +14,8 @@ export class SubjectRepo {
   async findById(id: string): Promise<Subject> {
     return this.prisma.subject.findUnique({ where: { id } });
   }
+
+  async findAllByUser(teacherId: string): Promise<Subject[]> {
+    return this.prisma.subject.findMany({ where: { teacherId } });
+  }
 }

@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request,
   HttpStatus,
+  Get,
 } from "@nestjs/common";
 import { SubjectService } from "./subject.service";
 import { CreateNewSubjectRequestDto } from "./dto/create-new-subject-request.dto";
@@ -13,6 +14,7 @@ import { AuthGuard } from "../../auth/guards/auth.guard";
 import { RequestUserPayload } from "../../common/types/request.type";
 import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateNewSubjectResponseDto } from "./dto/create-new-subject-response.dto";
+import { GetSubjectListResponseDto } from "./dto/get-subject-list-response.dto";
 
 @ApiTags("Subject")
 @Controller("/subject")
@@ -34,5 +36,17 @@ export class SubjectController {
   ) {
     const userId = req.userId;
     return this.service.createNewSubject({ ...body, teacherId: userId }, i18n);
+  }
+
+  @Get("/my")
+  @UseGuards(AuthGuard)
+  @ApiResponse({ type: GetSubjectListResponseDto })
+  @ApiBearerAuth()
+  async getSubjectsByTeacher(
+    @Request() req: RequestUserPayload,
+    @I18n() i18n: I18nContext,
+  ) {
+    const userId = req.userId;
+    return this.service.getTeachersSubjects(userId);
   }
 }

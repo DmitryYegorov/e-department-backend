@@ -3,12 +3,35 @@ import { Injectable, Logger } from "@nestjs/common";
 import { CreateNewSubject } from "./dto/create-new-subject-request.dto";
 import { I18nContext } from "nestjs-i18n";
 import { CreateNewSubjectResponseDto } from "./dto/create-new-subject-response.dto";
+import { GetSubjectListResponseDto } from "./dto/get-subject-list-response.dto";
 
 @Injectable()
 export class SubjectService {
   private readonly logger = new Logger(SubjectService.name);
 
   constructor(private readonly subjectRepo: SubjectRepo) {}
+
+  async getTeachersSubjects(
+    teacherId: string,
+  ): Promise<GetSubjectListResponseDto> {
+    try {
+      this.logger.log(`Invoked method getTeachersSubjects: ${teacherId}`);
+
+      const list = await this.subjectRepo.findAllByUser(teacherId);
+
+      this.logger.log(`Completed method getTeachersSubjects`);
+
+      return { list };
+    } catch (error) {
+      this.logger.log(
+        `Failed method getTeachersSubjects: ${JSON.stringify({
+          teacherId,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
 
   async createNewSubject(
     input: CreateNewSubject,
@@ -28,7 +51,10 @@ export class SubjectService {
       return created;
     } catch (error) {
       this.logger.error(
-        `Failed method createNewSubject: ${JSON.stringify(input)}`,
+        `Failed method createNewSubject: ${JSON.stringify({
+          ...input,
+          error,
+        })}`,
       );
       throw error;
     }
