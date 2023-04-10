@@ -7,6 +7,7 @@ import { I18nModule } from "nestjs-i18n";
 import * as path from "path";
 import { SubjectModule } from "./models/subject/subject.module";
 import { GroupModule } from "./models/group/group.module";
+import { StudentModule } from "./models/student/student.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GroupModule } from "./models/group/group.module";
     MailModule,
     SubjectModule,
     GroupModule,
+    StudentModule,
   ],
   controllers: [],
   providers: [],
