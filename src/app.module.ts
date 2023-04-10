@@ -6,6 +6,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { I18nModule } from "nestjs-i18n";
 import * as path from "path";
 import { SubjectModule } from "./models/subject/subject.module";
+import { GroupModule } from "./models/group/group.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SubjectModule } from "./models/subject/subject.module";
     AuthModule,
     MailModule,
     SubjectModule,
+    GroupModule,
   ],
   controllers: [],
   providers: [],

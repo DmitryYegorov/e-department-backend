@@ -17,7 +17,7 @@ import { CreateNewSubjectResponseDto } from "./dto/create-new-subject-response.d
 import { GetSubjectListResponseDto } from "./dto/get-subject-list-response.dto";
 
 @ApiTags("Subject")
-@Controller("/subject")
+@Controller("/subjects")
 export class SubjectController {
   constructor(private readonly service: SubjectService) {}
 
