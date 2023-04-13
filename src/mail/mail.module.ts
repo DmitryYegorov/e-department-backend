@@ -10,7 +10,6 @@ import { join } from "path";
       transport: {
         host: "smtp.yandex.ru",
         from: process.env.MAIL_USERNAME,
-        // secure: fa,
         auth: {
           user: process.env.MAIL_USERNAME,
           pass: process.env.MAIL_PASSWORD,

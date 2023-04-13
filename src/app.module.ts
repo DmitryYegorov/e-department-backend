@@ -8,6 +8,7 @@ import * as path from "path";
 import { SubjectModule } from "./models/subject/subject.module";
 import { GroupModule } from "./models/group/group.module";
 import { StudentModule } from "./models/student/student.module";
+import { ClassesModule } from "./models/classes/classes.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { StudentModule } from "./models/student/student.module";
     SubjectModule,
     GroupModule,
     StudentModule,
+    ClassesModule,
   ],
   controllers: [],
   providers: [],
