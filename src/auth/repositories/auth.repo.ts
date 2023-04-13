@@ -26,4 +26,8 @@ export class AuthRepo {
   async update(id: string, input: UserUpdateOptionsType): Promise<User> {
     return this.prisma.user.update({ where: { id }, data: input });
   }
+
+  async getUserById(id: string): Promise<User> {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
 }

@@ -10,7 +10,7 @@ import { join } from "path";
       transport: {
         host: "smtp.yandex.ru",
         from: process.env.MAIL_USERNAME,
-        secure: true,
+        // secure: fa,
         auth: {
           user: process.env.MAIL_USERNAME,
           pass: process.env.MAIL_PASSWORD,
@@ -19,7 +19,7 @@ import { join } from "path";
         logger: true,
       },
       defaults: {
-        from: `"No Reply" <${process.env.MAIL_USERNAME}>`,
+        from: `"E-Deparment" <${process.env.MAIL_USERNAME}>`,
       },
       template: {
         dir: join(__dirname, "templates"),

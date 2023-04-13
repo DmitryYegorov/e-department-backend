@@ -10,9 +10,6 @@ export class CreateNewGroupResponseDto {
   readonly name: string;
   @ApiProperty()
   readonly isActive: boolean;
-  @ApiProperty({ type: "string", format: "uuid" })
-  @IsString()
-  readonly teacherId: string;
   @ApiProperty()
   readonly createdAt: Date;
 }

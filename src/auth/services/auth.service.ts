@@ -1,8 +1,8 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
-  UnauthorizedException,
+  Logger, NotFoundException,
+  UnauthorizedException
 } from "@nestjs/common";
 import { AuthRepo } from "../repositories/auth.repo";
 import { AuthRegistrationRequestDto } from "../dto/auth-registration-request.dto";
@@ -15,6 +15,7 @@ import { AuthLoginRequestDto } from "../dto/auth-login-request.dto";
 import { AuthLoginResponseDto } from "../dto/auth-login-response.dto";
 import { ConfirmEmailDto } from "../dto/confirm-email.dto";
 import { I18nContext } from "nestjs-i18n";
+import { GetAuthUserResponseDto } from "../dto/get-auth-user-response.dto";
 
 @Injectable()
 export class AuthService {
@@ -73,6 +74,10 @@ export class AuthService {
 
       const user = await this.authRepo.getUserByEmail({ email });
 
+      if (!user) {
+        throw new NotFoundException(i18n.t("auth.errorMessages.userNotFound"))
+      }
+
       const passwordMatches = await bcrypt.compare(password, user.password);
 
       if (!passwordMatches || user.activationCode) {
@@ -125,7 +130,9 @@ export class AuthService {
       this.logger.debug({ exists });
 
       if (exists) {
-        throw new BadRequestException(i18n.t("auth.errorMessages.userAlreadyExists"));
+        throw new BadRequestException(
+          i18n.t("auth.errorMessages.userAlreadyExists"),
+        );
       }
 
       const salt = await bcrypt.genSalt();
@@ -167,6 +174,50 @@ export class AuthService {
           password: null,
           error,
         })}`,
+      );
+      throw error;
+    }
+  }
+
+  async getAuthUserData(
+    userId: string,
+    i18n: I18nContext,
+  ): Promise<GetAuthUserResponseDto> {
+    try {
+      this.logger.log(
+        `Invoked method getAuthData: ${JSON.stringify({ userId })}`,
+      );
+
+      const user = await this.authRepo.getUserById(userId);
+
+      if (!user) {
+        throw new UnauthorizedException(i18n.t("auth.errorMessages.userNotAuth"))
+      }
+
+      this.logger.log(
+        `Completed method getAuthData: ${JSON.stringify({
+          id: user.id,
+          firstName: user.firstName,
+          middleName: user.middleName,
+          lastName: user.lastName,
+          email: user.email,
+          type: user.type,
+          createdAt: user.createdAt,
+        })}`,
+      );
+
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        lastName: user.lastName,
+        email: user.email,
+        type: user.type,
+        createdAt: user.createdAt,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed method getAuthUserData: ${JSON.stringify({ userId, error })}`,
       );
       throw error;
     }

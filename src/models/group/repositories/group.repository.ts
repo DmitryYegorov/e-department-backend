@@ -12,6 +12,6 @@ export class GroupRepository {
   }
 
   async findAllByTeacherId(teacherId: string): Promise<Group[]> {
-    return this.prisma.group.findMany({ where: { teacherId } });
+    return this.prisma.group.findMany({ where: { createdBy: teacherId } });
   }
 }

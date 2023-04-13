@@ -11,7 +11,3 @@ export class CreateNewGroupRequestDto {
   @MaxLength(255)
   readonly name: string;
 }
-
-export type CreateNewGroupByTeacher = CreateNewGroupRequestDto & {
-  teacherId: string;
-};

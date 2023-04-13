@@ -32,7 +32,7 @@ export class GroupController {
     @I18n() i18n: I18nContext,
   ) {
     const userId = req.userId;
-    return this.service.createNewGroup({ ...body, teacherId: userId }, i18n);
+    return this.service.createNewGroup(body, userId, i18n);
   }
 
   @Get("/my")

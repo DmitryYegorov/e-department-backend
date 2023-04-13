@@ -23,6 +23,7 @@ model User {
   createdAt      DateTime  @default(value: now())
   Group          Group[]
   Subject        Subject[]
+  Classes        Classes[]
 
   @@map("user")
 }
@@ -30,12 +31,13 @@ model User {
 model Subject {
   id        String   @id @default(value: uuid()) @db.Uuid()
   name      String   @db.VarChar(255)
-  alias      String?  @db.VarChar(255)
+  alias     String?  @db.VarChar(255)
   isActive  Boolean  @default(value: true)
   teacherId String   @db.Uuid()
   createdAt DateTime @default(value: now())
 
-  teacher User @relation(fields: [teacherId], references: [id])
+  teacher User      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  Classes Classes[]
 
   @@map("subject")
 }
@@ -43,12 +45,14 @@ model Subject {
 model Group {
   id        String   @id @default(value: uuid()) @db.Uuid()
   name      String   @db.VarChar(255)
+  course    Int?
   isActive  Boolean  @default(value: false)
-  teacherId String   @db.Uuid()
+  createdBy String   @db.Uuid
   createdAt DateTime @default(value: now())
 
-  teacher User      @relation(fields: [teacherId], references: [id])
+  created User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   Student Student[]
+  Classes Classes[]
 
   @@map("group")
 }
@@ -62,7 +66,7 @@ model Student {
   isActive   Boolean  @default(value: true)
   createdAt  DateTime @default(value: now())
 
-  group Group @relation(fields: [groupId], references: [id])
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@map("student")
 }
@@ -70,9 +74,14 @@ model Student {
 model Classes {
   id        String   @id @default(value: uuid()) @db.Uuid
   groupId   String   @db.Uuid
-  subjectId String
+  subjectId String   @db.Uuid
+  teacherId String   @db.Uuid
   isActive  Boolean  @default(value: true)
   createdAt DateTime @default(value: now())
+
+  teacher User    @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@map("classes")
 }
