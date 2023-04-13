@@ -43,12 +43,14 @@ model Subject {
 }
 
 model Group {
-  id        String   @id @default(value: uuid()) @db.Uuid()
-  name      String   @db.VarChar(255)
-  course    Int?
-  isActive  Boolean  @default(value: false)
-  createdBy String   @db.Uuid
-  createdAt DateTime @default(value: now())
+  id          String   @id @default(value: uuid()) @db.Uuid()
+  name        String   @db.VarChar(255)
+  course      Int?
+  subGroup    Int      @default(value: 1)
+  description String?  @db.VarChar(255)
+  isActive    Boolean  @default(value: false)
+  createdBy   String   @db.Uuid
+  createdAt   DateTime @default(value: now())
 
   created User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   Student Student[]
