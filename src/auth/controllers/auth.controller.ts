@@ -52,7 +52,7 @@ export class AuthController {
     return this.service.confirmEmail(body, i18n);
   }
 
-  @Get("/user-info")
+  @Get("/user")
   @ApiResponse({ type: GetAuthUserResponseDto, status: HttpStatus.OK })
   @ApiBearerAuth()
   @UseGuards(AuthGuard)

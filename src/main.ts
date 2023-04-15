@@ -12,7 +12,7 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new TransformInterceptor());
+  // app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalPipes(new ValidationPipe());
 
   const swaggerConfig = new DocumentBuilder()
@@ -22,6 +22,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("swagger", app, document);
+
+  app.enableCors({
+    origin: "*",
+    methods: ["GET", "POST"],
+  });
 
   await app.listen(config.get("PORT"));
 }
