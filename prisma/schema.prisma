@@ -26,6 +26,7 @@ model User {
   Classes            Classes[]
   StudyPlan          StudyPlan[]
   CriteriaEvaluation CriteriaEvaluation[]
+  StudentGrades      StudentGrades[]
 
   @@map("user")
 }
@@ -71,7 +72,8 @@ model Student {
   isActive   Boolean  @default(value: true)
   createdAt  DateTime @default(value: now())
 
-  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group         Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  StudentGrades StudentGrades[]
 
   @@map("student")
 }
@@ -89,6 +91,21 @@ model Classes {
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@map("classes")
+}
+
+model StudentGrades {
+  id                    String   @id @default(value: uuid()) @db.Uuid
+  studentId             String   @db.Uuid
+  criteriaEvalutationId String   @db.Uuid
+  value                 Int
+  createdAt             DateTime
+  createdBy             String   @db.Uuid
+
+  author   User               @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  student  Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  criteria CriteriaEvaluation @relation(fields: [criteriaEvalutationId], references: [id], onDelete: Cascade)
+
+  @@map("student-grades")
 }
 
 model StudyPlan {
@@ -114,7 +131,8 @@ model CriteriaEvaluation {
   createdAt     DateTime @default(value: now())
   createdBy     String   @db.Uuid
 
-  author User @relation(fields: [createdBy], references: [id])
+  author        User            @relation(fields: [createdBy], references: [id])
+  StudentGrades StudentGrades[]
 
   @@map("criteria-evaluation")
 }
