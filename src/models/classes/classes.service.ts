@@ -39,4 +39,27 @@ export class ClassesService {
       throw error;
     }
   }
+
+  async getClassesBySubjects(subjectId: string) {
+    try {
+      this.logger.log(
+        `Invoked method getClassesBySubjects: ${JSON.stringify({ subjectId })}`,
+      );
+
+      const list = await this.classesRepo.getClassesBySubjects(subjectId);
+
+      this.logger.log(
+        `Completed method getClassesBySubjects: ${JSON.stringify(list)}`,
+      );
+      return { list: list.map(i => i.group) };
+    } catch (error) {
+      this.logger.error(
+        `Failed method getClassesBySubjects: ${JSON.stringify({
+          subjectId,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
 }
