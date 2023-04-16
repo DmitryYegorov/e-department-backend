@@ -11,6 +11,35 @@ export class ClassesRepository {
     return this.prisma.classes.create({ data });
   }
 
+  async getClassTable(classId: string) {
+    return this.prisma.classes.findUnique({
+      where: { id: classId },
+      select: {
+        id: true,
+        group: {
+          select: {
+            id: true,
+            Student: {
+              select: {
+                id: true,
+                firstName: true,
+                middleName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        subject: {
+          select: {
+            id: true,
+            name: true,
+            alias: true,
+          },
+        },
+      },
+    });
+  }
+
   async getClassesBySubjects(subjectId: string) {
     return this.prisma.classes.findMany({
       where: { subjectId },
@@ -22,9 +51,9 @@ export class ClassesRepository {
             name: true,
             subGroup: true,
             description: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
   }
 }

@@ -11,19 +11,21 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(value: uuid()) @db.Uuid
-  firstName      String    @db.VarChar(255)
-  middleName     String    @db.VarChar(255)
-  lastName       String?   @db.VarChar(255)
-  email          String    @unique @db.VarChar(255)
-  password       String    @db.VarChar(255)
-  type           String    @db.VarChar(125)
-  activationCode String?   @db.VarChar(255)
-  verifiedAt     DateTime?
-  createdAt      DateTime  @default(value: now())
-  Group          Group[]
-  Subject        Subject[]
-  Classes        Classes[]
+  id                 String               @id @default(value: uuid()) @db.Uuid
+  firstName          String               @db.VarChar(255)
+  middleName         String               @db.VarChar(255)
+  lastName           String?              @db.VarChar(255)
+  email              String               @unique @db.VarChar(255)
+  password           String               @db.VarChar(255)
+  type               String               @db.VarChar(125)
+  activationCode     String?              @db.VarChar(255)
+  verifiedAt         DateTime?
+  createdAt          DateTime             @default(value: now())
+  Group              Group[]
+  Subject            Subject[]
+  Classes            Classes[]
+  StudyPlan          StudyPlan[]
+  CriteriaEvaluation CriteriaEvaluation[]
 
   @@map("user")
 }
@@ -36,8 +38,9 @@ model Subject {
   teacherId String   @db.Uuid()
   createdAt DateTime @default(value: now())
 
-  teacher User      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  Classes Classes[]
+  teacher   User        @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  Classes   Classes[]
+  StudyPlan StudyPlan[]
 
   @@map("subject")
 }
@@ -86,4 +89,32 @@ model Classes {
   subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
 
   @@map("classes")
+}
+
+model StudyPlan {
+  id          String   @id @default(value: uuid()) @db.Uuid
+  subjectId   String   @db.Uuid
+  topic       String   @db.VarChar(255)
+  description String?  @db.VarChar(255)
+  order       Int
+  createdAt   DateTime @default(value: now())
+  createdBy   String   @db.Uuid
+
+  author  User    @relation(fields: [createdBy], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@map("study-plan")
+}
+
+model CriteriaEvaluation {
+  id            String   @id @default(value: uuid()) @db.Uuid
+  studyPlanItem String?  @db.Uuid
+  name          String   @db.VarChar(255)
+  coefficient   Int
+  createdAt     DateTime @default(value: now())
+  createdBy     String   @db.Uuid
+
+  author User @relation(fields: [createdBy], references: [id])
+
+  @@map("criteria-evaluation")
 }

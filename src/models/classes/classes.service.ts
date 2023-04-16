@@ -51,13 +51,42 @@ export class ClassesService {
       this.logger.log(
         `Completed method getClassesBySubjects: ${JSON.stringify(list)}`,
       );
-      return { list: list.map(i => i.group) };
+      return { list };
     } catch (error) {
       this.logger.error(
         `Failed method getClassesBySubjects: ${JSON.stringify({
           subjectId,
           error,
         })}`,
+      );
+      throw error;
+    }
+  }
+
+  async getClassTableStatistics(classId: string) {
+    try {
+      this.logger.log(
+        `Invoked getClassTableStatistics: ${JSON.stringify({ classId })}`,
+      );
+
+      const table = await this.classesRepo.getClassTable(classId);
+
+      const formatted = {
+        id: table.id,
+        students: table.group.Student.map((st) => ({
+          id: st.id,
+          fullName: `${st.firstName} ${st.middleName} ${st.lastName}`,
+        })),
+      };
+
+      this.logger.log(
+        `Completed getClassTableStatistics: ${JSON.stringify({ ...formatted })}`,
+      );
+
+      return formatted;
+    } catch (error) {
+      this.logger.error(
+        `Failed getClassTableStatistic: ${JSON.stringify({ classId, error })}`,
       );
       throw error;
     }
