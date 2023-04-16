@@ -4,12 +4,16 @@ import { CreateNewSubject } from "./dto/create-new-subject-request.dto";
 import { I18nContext } from "nestjs-i18n";
 import { CreateNewSubjectResponseDto } from "./dto/create-new-subject-response.dto";
 import { GetSubjectListResponseDto } from "./dto/get-subject-list-response.dto";
+import { StudyPlanRepository } from "./repositories/study-plan.repository";
 
 @Injectable()
 export class SubjectService {
   private readonly logger = new Logger(SubjectService.name);
 
-  constructor(private readonly subjectRepo: SubjectRepo) {}
+  constructor(
+    private readonly subjectRepo: SubjectRepo,
+    private readonly studyPlanRepo: StudyPlanRepository,
+  ) {}
 
   async getTeachersSubjects(
     teacherId: string,
@@ -53,6 +57,31 @@ export class SubjectService {
       this.logger.error(
         `Failed method createNewSubject: ${JSON.stringify({
           ...input,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
+  async getStudyPlanBySubject(subjectId: string) {
+    try {
+      this.logger.log(
+        `Invoked method getStudyPlanBySubject: ${JSON.stringify({
+          subjectId,
+        })}`,
+      );
+
+      const plan = await this.studyPlanRepo.getPlanBySubjectId(subjectId);
+
+      this.logger.log(
+        `Completed getStudyPlanBySubject: ${JSON.stringify({ plan })}`,
+      );
+      return { plan };
+    } catch (error) {
+      this.logger.error(
+        `Failed method getStudyPlanBySubject: ${JSON.stringify({
+          subjectId,
           error,
         })}`,
       );

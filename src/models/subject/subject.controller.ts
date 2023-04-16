@@ -6,6 +6,7 @@ import {
   Request,
   HttpStatus,
   Get,
+  Param,
 } from "@nestjs/common";
 import { SubjectService } from "./subject.service";
 import { CreateNewSubjectRequestDto } from "./dto/create-new-subject-request.dto";
@@ -36,6 +37,13 @@ export class SubjectController {
   ) {
     const userId = req.userId;
     return this.service.createNewSubject({ ...body, teacherId: userId }, i18n);
+  }
+
+  @Get("/:subjectId/plan")
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  async getStudyPlan(@Param("subjectId") subjectId: string) {
+    return this.service.getStudyPlanBySubject(subjectId);
   }
 
   @Get("/my")
