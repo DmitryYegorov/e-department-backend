@@ -25,6 +25,26 @@ export class ClassesRepository {
                 firstName: true,
                 middleName: true,
                 lastName: true,
+                StudentGrades: {
+                  select: {
+                    id: true,
+                    value: true,
+                    criteria: {
+                      select: {
+                        id: true,
+                        studyPlanItem: {
+                          select: {
+                            id: true,
+                            topic: true,
+                            order: true,
+                          }
+                        },
+                        name: true,
+                        coefficient: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
@@ -34,6 +54,18 @@ export class ClassesRepository {
             id: true,
             name: true,
             alias: true,
+            StudyPlan: {
+              select: {
+                id: true,
+                topic: true,
+                order: true,
+                CriteriaEvaluation: {
+                  select: {
+                    id: true,
+                  }
+                }
+              }
+            }
           },
         },
       },

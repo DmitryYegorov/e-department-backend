@@ -117,21 +117,23 @@ model StudyPlan {
   createdAt   DateTime @default(value: now())
   createdBy   String   @db.Uuid
 
-  author  User    @relation(fields: [createdBy], references: [id])
-  subject Subject @relation(fields: [subjectId], references: [id])
+  author             User                 @relation(fields: [createdBy], references: [id])
+  subject            Subject              @relation(fields: [subjectId], references: [id])
+  CriteriaEvaluation CriteriaEvaluation[]
 
   @@map("study-plan")
 }
 
 model CriteriaEvaluation {
-  id            String   @id @default(value: uuid()) @db.Uuid
-  studyPlanItem String?  @db.Uuid
-  name          String   @db.VarChar(255)
-  coefficient   Int
-  createdAt     DateTime @default(value: now())
-  createdBy     String   @db.Uuid
+  id              String   @id @default(value: uuid()) @db.Uuid
+  studyPlanItemId String?  @db.Uuid
+  name            String   @db.VarChar(255)
+  coefficient     Int
+  createdAt       DateTime @default(value: now())
+  createdBy       String   @db.Uuid
 
   author        User            @relation(fields: [createdBy], references: [id])
+  studyPlanItem StudyPlan?      @relation(fields: [studyPlanItemId], references: [id])
   StudentGrades StudentGrades[]
 
   @@map("criteria-evaluation")

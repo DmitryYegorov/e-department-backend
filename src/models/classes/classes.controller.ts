@@ -1,5 +1,13 @@
 import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
 import { ClassesService } from "./classes.service";
 import { CreateClassRequestDto } from "./dto/create-class-request.dto";
 import { RequestUserPayload } from "../../common/types/request.type";
@@ -25,7 +33,14 @@ export class ClassesController {
   }
 
   @Get("/subject/:subjectId")
+  @UseGuards(AuthGuard)
   async getClassesBySubject(@Param("subjectId") subjectId: string) {
     return this.service.getClassesBySubjects(subjectId);
+  }
+
+  @Get("/:classId/table")
+  @UseGuards(AuthGuard)
+  async getClassTable(@Param("classId") classId: string) {
+    return this.service.getClassTableStatistics(classId);
   }
 }

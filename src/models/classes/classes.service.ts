@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ClassesRepository } from "./repositories/classes.repository";
 import { CreateClassRequestDto } from "./dto/create-class-request.dto";
 import { I18nContext } from "nestjs-i18n";
+import * as _ from "lodash";
 
 @Injectable()
 export class ClassesService {
@@ -69,21 +70,58 @@ export class ClassesService {
         `Invoked getClassTableStatistics: ${JSON.stringify({ classId })}`,
       );
 
-      const table = await this.classesRepo.getClassTable(classId);
+      const row = await this.classesRepo.getClassTable(classId);
 
-      const formatted = {
-        id: table.id,
-        students: table.group.Student.map((st) => ({
-          id: st.id,
-          fullName: `${st.firstName} ${st.middleName} ${st.lastName}`,
-        })),
+      const plan = row.subject.StudyPlan.map((sp) => ({
+        criteria: sp.CriteriaEvaluation,
+        topic: sp.topic,
+        order: sp.order,
+        id: sp.id,
+      })).sort((a, b) => a.order - b.order);
+
+      const table = row.group.Student.map((st) => ({
+        studentId: st.id,
+        studentName: `${st.firstName} ${st.middleName} ${st.lastName}`,
+        grade: (function () {
+          const groupedPlanByTopicId = _.groupBy(plan, "id");
+          const groupedGradesByTopicId = _.groupBy(
+            st.StudentGrades,
+            "criteria.studyPlanItem.id",
+          );
+
+          return Object.fromEntries(
+            Object.keys(groupedPlanByTopicId).map((topicId) => [
+              topicId,
+              groupedGradesByTopicId[topicId] || null,
+            ]),
+          );
+        })(),
+        // grade: st.StudentGrades.map((grade) => {
+        //   if (!!grade) {
+        //     return { value: 0 };
+        //   }
+        //
+        //   return {
+        //     topicId: grade.criteria.studyPlanItem.id,
+        //     topic: grade.criteria.studyPlanItem.topic,
+        //     order: grade.criteria.studyPlanItem.order,
+        //     criteria: grade.criteria.name,
+        //     coefficient: grade.criteria.coefficient,
+        //     value: grade.value,
+        //   };
+        // }),
+      }));
+
+      const result = {
+        table,
+        plan,
       };
 
       this.logger.log(
-        `Completed getClassTableStatistics: ${JSON.stringify({ ...formatted })}`,
+        `Completed getClassTableStatistics: ${JSON.stringify({ result })}`,
       );
 
-      return formatted;
+      return result;
     } catch (error) {
       this.logger.error(
         `Failed getClassTableStatistic: ${JSON.stringify({ classId, error })}`,

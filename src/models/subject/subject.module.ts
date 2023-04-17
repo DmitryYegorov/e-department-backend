@@ -6,6 +6,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { StudyPlanRepository } from "./repositories/study-plan.repository";
 import { StudyPlanController } from "./study-plan.controller";
 import { StudyPlanService } from "./study-plan.service";
+import { CriteriaRepository } from "./repositories/criteria.repository";
 
 @Module({
   controllers: [SubjectController, StudyPlanController],
@@ -14,6 +15,7 @@ import { StudyPlanService } from "./study-plan.service";
     SubjectRepo,
     StudyPlanService,
     StudyPlanRepository,
+    CriteriaRepository,
   ],
   imports: [JwtModule],
 })

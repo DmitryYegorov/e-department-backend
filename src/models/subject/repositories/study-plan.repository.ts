@@ -7,6 +7,25 @@ import { StudyPlan } from "@prisma/client";
 export class StudyPlanRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getPlanItemById(id: string) {
+    return this.prisma.studyPlan.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        topic: true,
+        description: true,
+        order: true,
+        CriteriaEvaluation: {
+          select: {
+            id: true,
+            name: true,
+            coefficient: true,
+          },
+        },
+      },
+    });
+  }
+
   async getPlanBySubjectId(subjectId: string) {
     return this.prisma.studyPlan.findMany({
       where: {
