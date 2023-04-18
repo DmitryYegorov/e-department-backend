@@ -10,4 +10,11 @@ export class CreateNewGroupRequestDto {
   @IsString()
   @MaxLength(255)
   readonly name: string;
+
+  @ApiProperty()
+  readonly group: number;
+  @ApiProperty()
+  readonly subGroup: number;
+  @ApiProperty()
+  readonly course: number;
 }

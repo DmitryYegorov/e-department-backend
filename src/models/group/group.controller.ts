@@ -35,6 +35,12 @@ export class GroupController {
     return this.service.createNewGroup(body, userId, i18n);
   }
 
+  @Get()
+  @UseGuards(AuthGuard)
+  async getAllGroups() {
+    return this.service.getAllActiveGroups();
+  }
+
   @Get("/my")
   @UseGuards(AuthGuard)
   @ApiBearerAuth()

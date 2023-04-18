@@ -49,9 +49,11 @@ model Subject {
 model Group {
   id          String   @id @default(value: uuid()) @db.Uuid()
   name        String   @db.VarChar(255)
-  course      Int?
+  course      Int?     @default(value: 1)
+  group       Int      @default(value: 1)
   subGroup    Int      @default(value: 1)
   description String?  @db.VarChar(255)
+  isShared    Boolean  @default(value: false)
   isActive    Boolean  @default(value: false)
   createdBy   String   @db.Uuid
   createdAt   DateTime @default(value: now())

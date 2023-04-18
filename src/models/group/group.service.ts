@@ -1,8 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { GroupRepository } from "./repositories/group.repository";
-import {
-  CreateNewGroupRequestDto,
-} from "./dto/create-new-group-request.dto";
+import { CreateNewGroupRequestDto } from "./dto/create-new-group-request.dto";
 import { I18nContext } from "nestjs-i18n";
 
 @Injectable()
@@ -10,6 +8,34 @@ export class GroupService {
   private readonly logger = new Logger(GroupService.name);
 
   constructor(private readonly groupRepo: GroupRepository) {}
+
+  async getAllActiveGroups() {
+    try {
+      this.logger.log(`Invoked method getAllActiveGroups`);
+      const list = await this.groupRepo.findAll();
+
+      this.logger.log(
+        `Completed method getAllActiveGroups: ${JSON.stringify(list)}`,
+      );
+      return {
+        list: list.map((i) => ({
+          id: i.id,
+          name: i.name,
+          course: i.course,
+          group: i.group,
+          subGroup: i.subGroup,
+          isShared: i.isShared,
+          createdId: i.createdBy,
+          createdName: `${i.created.firstName} ${i.created.middleName} ${i.created.lastName}`,
+        })),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed method getAllActiveGroups: ${JSON.stringify(error)}`,
+      );
+      throw error;
+    }
+  }
 
   async createNewGroup(
     input: CreateNewGroupRequestDto,
