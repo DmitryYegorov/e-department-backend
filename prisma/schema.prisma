@@ -98,7 +98,7 @@ model StudentGrades {
   studentId             String   @db.Uuid
   criteriaEvalutationId String   @db.Uuid
   value                 Int
-  createdAt             DateTime
+  createdAt             DateTime @default(value: now())
   createdBy             String   @db.Uuid
 
   author   User               @relation(fields: [createdBy], references: [id], onDelete: Cascade)

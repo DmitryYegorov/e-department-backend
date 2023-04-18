@@ -72,6 +72,9 @@ export class ClassesService {
 
       const row = await this.classesRepo.getClassTable(classId);
 
+      const subjectName = row.subject.name;
+      const groupName = row.group.name;
+
       const plan = row.subject.StudyPlan.map((sp) => ({
         criteria: sp.CriteriaEvaluation,
         topic: sp.topic,
@@ -89,30 +92,18 @@ export class ClassesService {
             "criteria.studyPlanItem.id",
           );
 
-          return Object.fromEntries(
-            Object.keys(groupedPlanByTopicId).map((topicId) => [
+          return Object.fromEntries([
+            ...Object.keys(groupedPlanByTopicId).map((topicId) => [
               topicId,
               groupedGradesByTopicId[topicId] || null,
             ]),
-          );
+          ]);
         })(),
-        // grade: st.StudentGrades.map((grade) => {
-        //   if (!!grade) {
-        //     return { value: 0 };
-        //   }
-        //
-        //   return {
-        //     topicId: grade.criteria.studyPlanItem.id,
-        //     topic: grade.criteria.studyPlanItem.topic,
-        //     order: grade.criteria.studyPlanItem.order,
-        //     criteria: grade.criteria.name,
-        //     coefficient: grade.criteria.coefficient,
-        //     value: grade.value,
-        //   };
-        // }),
       }));
 
       const result = {
+        groupName,
+        subjectName,
         table,
         plan,
       };

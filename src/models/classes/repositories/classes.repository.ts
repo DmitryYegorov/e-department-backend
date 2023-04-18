@@ -19,6 +19,7 @@ export class ClassesRepository {
         group: {
           select: {
             id: true,
+            name: true,
             Student: {
               select: {
                 id: true,
@@ -37,7 +38,7 @@ export class ClassesRepository {
                             id: true,
                             topic: true,
                             order: true,
-                          }
+                          },
                         },
                         name: true,
                         coefficient: true,
@@ -62,10 +63,12 @@ export class ClassesRepository {
                 CriteriaEvaluation: {
                   select: {
                     id: true,
-                  }
-                }
-              }
-            }
+                    name: true,
+                    coefficient: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
