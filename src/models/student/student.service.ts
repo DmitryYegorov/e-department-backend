@@ -10,6 +10,51 @@ export class StudentService {
 
   constructor(private readonly studentRepo: StudentRepository) {}
 
+  async updateStudentInfo(studentId: string, data: any) {
+    try {
+      this.logger.log(
+        `Invoked method updateStudentInfo: ${JSON.stringify({
+          studentId,
+          data,
+        })}`,
+      );
+
+      const updated = await this.studentRepo.update(studentId, data);
+
+      this.logger.log(
+        `Completed method: updateStudentInfo: ${JSON.stringify(updated)}`,
+      );
+      return updated;
+    } catch (error) {
+      this.logger.error(
+        `Failed method updateStudentInfo: ${JSON.stringify({
+          studentId,
+          data,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
+  async getStudentById(studentId: string) {
+    try {
+      this.logger.log(`Invoked method getStudentById: ${studentId}`);
+
+      const student = await this.studentRepo.findOne(studentId);
+
+      this.logger.log(
+        `Completed method getStudentById: ${JSON.stringify(student)}`,
+      );
+      return student;
+    } catch (error) {
+      this.logger.error(
+        `Failed method getStudentById: ${JSON.stringify({ studentId, error })}`,
+      );
+      throw error;
+    }
+  }
+
   async createNewStudent(
     input: CreateStudentServiceDto,
     i18n: I18nContext,

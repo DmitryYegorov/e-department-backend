@@ -46,12 +46,22 @@ model Subject {
   @@map("subject")
 }
 
+model Faculty {
+  id        String  @id @default(value: uuid()) @db.Uuid()
+  name      String  @db.VarChar(255)
+  shortName String  @db.VarChar(125)
+  Group     Group[]
+
+  @@map("faculty")
+}
+
 model Group {
   id          String   @id @default(value: uuid()) @db.Uuid()
   name        String   @db.VarChar(255)
   course      Int?     @default(value: 1)
   group       Int      @default(value: 1)
   subGroup    Int      @default(value: 1)
+  facultyId   String?   @db.Uuid()
   description String?  @db.VarChar(255)
   isShared    Boolean  @default(value: false)
   isActive    Boolean  @default(value: false)
@@ -59,6 +69,7 @@ model Group {
   createdAt   DateTime @default(value: now())
 
   created User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  faculty Faculty?   @relation(fields: [facultyId], references: [id], onDelete: SetNull)
   Student Student[]
   Classes Classes[]
 

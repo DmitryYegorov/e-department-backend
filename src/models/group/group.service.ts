@@ -9,6 +9,22 @@ export class GroupService {
 
   constructor(private readonly groupRepo: GroupRepository) {}
 
+  async getGroupById(groupId) {
+    try {
+      this.logger.log(`Invoked method getGroupById: ${groupId}`);
+
+      const group = await this.groupRepo.findOne(groupId);
+
+      this.logger.log(
+        `Completed method getGroupById: ${JSON.stringify(group)}`,
+      );
+      return group;
+    } catch (e) {
+      this.logger.error(`Failed method getGroupById: ${groupId}`);
+      throw e;
+    }
+  }
+
   async getAllActiveGroups() {
     try {
       this.logger.log(`Invoked method getAllActiveGroups`);
@@ -26,6 +42,8 @@ export class GroupService {
           subGroup: i.subGroup,
           isShared: i.isShared,
           createdId: i.createdBy,
+          facultyShortName: i.faculty?.shortName,
+          facultyId: i.faculty?.id,
           createdName: `${i.created.firstName} ${i.created.middleName} ${i.created.lastName}`,
         })),
       };

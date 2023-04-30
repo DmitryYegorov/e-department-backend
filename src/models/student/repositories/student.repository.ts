@@ -14,4 +14,12 @@ export class StudentRepository {
   async findAllByGroupId(groupId: string): Promise<Student[]> {
     return this.prisma.student.findMany({ where: { groupId } });
   }
+
+  async findOne(studentId: string): Promise<Student> {
+    return this.prisma.student.findUnique({ where: { id: studentId } });
+  }
+
+  async update(id: string, data: any) {
+    return this.prisma.student.update({ where: { id }, data });
+  }
 }

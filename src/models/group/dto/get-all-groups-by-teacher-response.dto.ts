@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 import { List } from "../../../common/types/response.type";
 
 export class GroupItemDto {
@@ -14,6 +14,12 @@ export class GroupItemDto {
   @ApiProperty({ type: "string", format: "uuid" })
   @IsString()
   readonly teacherId: string;
+  @ApiProperty()
+  @IsOptional()
+  readonly facultyShortName?: string;
+  @ApiProperty({ type: "string", format: "uuid" })
+  @IsString()
+  readonly facultyId?: string;
   @ApiProperty()
   readonly createdAt: Date;
 }

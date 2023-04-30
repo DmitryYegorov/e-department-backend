@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   UseGuards,
 } from "@nestjs/common";
 import { StudentService } from "./student.service";
@@ -36,6 +37,21 @@ export class StudentController {
     @I18n() i18n: I18nContext,
   ) {
     return this.service.createNewStudent(body, i18n);
+  }
+
+  @Get("/:studentId")
+  @UseGuards(AuthGuard)
+  async getStudentById(@Param("studentId") studentId: string) {
+    return this.service.getStudentById(studentId);
+  }
+
+  @Put("/:studentId")
+  @UseGuards(AuthGuard)
+  async updateStudent(
+    @Param("studentId") studentId: string,
+    @Body() body: any,
+  ) {
+    return this.service.updateStudentInfo(studentId, body);
   }
 
   @Get("/group/:groupId")

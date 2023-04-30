@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   Request,
   UseGuards,
@@ -54,5 +55,11 @@ export class GroupController {
   ) {
     const teacherId = req.userId;
     return this.service.getAllGroupsByTeacher(teacherId, i18n);
+  }
+
+  @Get("/:groupId")
+  @UseGuards(AuthGuard)
+  async getGroupById(@Param("groupId") groupId: string) {
+    return this.service.getGroupById(groupId);
   }
 }
