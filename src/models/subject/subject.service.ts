@@ -73,11 +73,12 @@ export class SubjectService {
       );
 
       const plan = await this.studyPlanRepo.getPlanBySubjectId(subjectId);
+      const subject = await this.subjectRepo.findById(subjectId);
 
       this.logger.log(
         `Completed getStudyPlanBySubject: ${JSON.stringify({ plan })}`,
       );
-      return { plan };
+      return { plan, subject };
     } catch (error) {
       this.logger.error(
         `Failed method getStudyPlanBySubject: ${JSON.stringify({

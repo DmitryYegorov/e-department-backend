@@ -6,4 +6,6 @@ export class GradeItem {
 
 export class SetStudentGradeRequestDto {
   readonly grades: Array<GradeItem>;
+  readonly comment?: string;
+  readonly done?: boolean;
 }

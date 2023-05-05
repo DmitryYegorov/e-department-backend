@@ -30,6 +30,8 @@ export class ClassesRepository {
                   select: {
                     id: true,
                     value: true,
+                    done: true,
+                    comment: true,
                     criteria: {
                       select: {
                         id: true,

@@ -13,6 +13,31 @@ export class StudyPlanService {
     private readonly criteriaRepo: CriteriaRepository,
   ) {}
 
+  async deleteItemFromStudyPlanById(id: string) {
+    try {
+      this.logger.log(
+        `Invoked method deleteItemFromStudyPlanById: ${JSON.stringify({ id })}`,
+      );
+
+      const deleted = await this.studyPlanRepo.removeOne(id);
+
+      this.logger.log(
+        `Completed method deleteItemFromStudyPlanById: ${JSON.stringify({
+          deleted,
+        })}`,
+      );
+      return deleted;
+    } catch (error) {
+      this.logger.error(
+        `Failed method deleteItemFromStudyPlanById: ${JSON.stringify({
+          id,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
   async createCriteriaForStudyPlanItem(
     data: CreateCriteriaRequestDto,
     userId: string,
@@ -24,21 +49,46 @@ export class StudyPlanService {
         })}`,
       );
 
-      const created = await this.criteriaRepo.create(
-        data.criteria.map((c) => ({
-          name: c.name,
-          coefficient: c.coefficient,
-          studyPlanItemId: data.studyPlanItemId,
-          createdBy: userId,
-        })),
-      );
+      const { topic, order } = data;
+
+      // const existingData = await this.criteriaRepo.fetchAllByPlanId(
+      //   data.studyPlanItemId,
+      // );
+
+      const created = [];
+      const updated = [];
+
+      for await (const ce of data.criteria) {
+        if (ce.id) {
+          const res = await this.criteriaRepo.update(
+            ce.id,
+            ce.name,
+            ce.coefficient,
+          );
+          updated.push(res);
+        } else {
+          const res = await this.criteriaRepo.create({
+            studyPlanItemId: data.studyPlanItemId,
+            createdBy: userId,
+            name: ce.name,
+            coefficient: ce.coefficient,
+          });
+          created.push(res);
+        }
+      }
+
+      await this.studyPlanRepo.updatePlanItem(data.studyPlanItemId, {
+        topic,
+        order,
+      });
 
       this.logger.log(
-        `Completed method createCriteriaForStudyPlanItem: ${JSON.stringify(
+        `Completed method createCriteriaForStudyPlanItem: ${JSON.stringify({
           created,
-        )}`,
+          updated,
+        })}`,
       );
-      return created;
+      return [...created, updated];
     } catch (error) {
       this.logger.log(
         `Failed method createCriteriaForStudyPlanItem: ${JSON.stringify({

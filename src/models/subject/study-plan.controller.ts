@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -39,12 +40,21 @@ export class StudyPlanController {
     return this.service.getItemWithCriteriaById(planId);
   }
 
+  @Delete("/:planId")
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  async removePlanItemById(@Param("planId") planId: string) {
+    return this.service.deleteItemFromStudyPlanById(planId);
+  }
+
   @Post("/criteria")
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   async createCriteriaForPlanItem(
-    @Body() body: CreateCriteriaRequestDto,
-    @Request() req: RequestUserPayload,
+    @Body()
+    body: CreateCriteriaRequestDto,
+    @Request()
+    req: RequestUserPayload,
   ) {
     return this.service.createCriteriaForStudyPlanItem(body, req.userId);
   }

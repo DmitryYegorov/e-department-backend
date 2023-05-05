@@ -6,7 +6,33 @@ import { CreateCriteriaType } from "./types/create-criteria.type";
 export class CriteriaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: Array<CreateCriteriaType>) {
-    return this.prisma.criteriaEvaluation.createMany({ data });
+  async create(data: CreateCriteriaType) {
+    return this.prisma.criteriaEvaluation.create({ data });
+  }
+
+  async fetchAllByPlanId(planId: string) {
+    return this.prisma.criteriaEvaluation.findMany({
+      where: { studyPlanItemId: planId },
+    });
+  }
+
+  async update(criteriaId: string, name: string, coefficient: number) {
+    return this.prisma.criteriaEvaluation.update({
+      where: { id: criteriaId },
+      data: {
+        name,
+        coefficient,
+      },
+    });
+  }
+
+  async removeAllById(ids: string[]) {
+    return this.prisma.criteriaEvaluation.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
   }
 }

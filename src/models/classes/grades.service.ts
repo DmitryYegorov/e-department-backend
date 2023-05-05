@@ -14,10 +14,10 @@ export class GradesService {
         `Invoked method setStudentGrade: ${JSON.stringify({ body, userId })}`,
       );
 
-      const { grades } = body;
+      const { grades, done, comment } = body;
 
       const setted = await this.gradesRepo.setGrade(
-        grades.map((g) => ({ ...g, createdBy: userId })),
+        grades.map((g) => ({ ...g, createdBy: userId, done, comment })),
       );
 
       this.logger.log(

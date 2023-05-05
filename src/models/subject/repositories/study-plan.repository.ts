@@ -7,6 +7,14 @@ import { StudyPlan } from "@prisma/client";
 export class StudyPlanRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async updatePlanItem(id: string, data: { topic: string; order: number }) {
+    return this.prisma.studyPlan.update({ where: { id }, data });
+  }
+
+  async removeOne(id: string) {
+    return this.prisma.studyPlan.delete({ where: { id } });
+  }
+
   async getPlanItemById(id: string) {
     return this.prisma.studyPlan.findUnique({
       where: { id },

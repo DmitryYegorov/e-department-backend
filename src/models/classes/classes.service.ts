@@ -92,12 +92,14 @@ export class ClassesService {
             "criteria.studyPlanItem.id",
           );
 
-          return Object.fromEntries([
-            ...Object.keys(groupedPlanByTopicId).map((topicId) => [
-              topicId,
-              groupedGradesByTopicId[topicId] || null,
+          return {
+            ...Object.fromEntries([
+              ...Object.keys(groupedPlanByTopicId).map((topicId) => [
+                topicId,
+                groupedGradesByTopicId[topicId] || null,
+              ]),
             ]),
-          ]);
+          };
         })(),
       }));
 

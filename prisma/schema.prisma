@@ -61,7 +61,7 @@ model Group {
   course      Int?     @default(value: 1)
   group       Int      @default(value: 1)
   subGroup    Int      @default(value: 1)
-  facultyId   String?   @db.Uuid()
+  facultyId   String?  @db.Uuid()
   description String?  @db.VarChar(255)
   isShared    Boolean  @default(value: false)
   isActive    Boolean  @default(value: false)
@@ -69,7 +69,7 @@ model Group {
   createdAt   DateTime @default(value: now())
 
   created User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  faculty Faculty?   @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  faculty Faculty?  @relation(fields: [facultyId], references: [id], onDelete: SetNull)
   Student Student[]
   Classes Classes[]
 
@@ -110,6 +110,8 @@ model StudentGrades {
   id                    String   @id @default(value: uuid()) @db.Uuid
   studentId             String   @db.Uuid
   criteriaEvalutationId String   @db.Uuid
+  comment               String?  @db.VarChar(512)
+  done                  Boolean  @default(value: false)
   value                 Int
   createdAt             DateTime @default(value: now())
   createdBy             String   @db.Uuid
