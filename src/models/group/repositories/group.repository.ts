@@ -7,6 +7,10 @@ import { Group, User, Faculty } from "@prisma/client";
 export class GroupRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async update(id: string, data: Partial<Group>) {
+    return this.prisma.group.update({ where: { id }, data });
+  }
+
   async findOne(id: string): Promise<Group> {
     return this.prisma.group.findUnique({ where: { id } });
   }

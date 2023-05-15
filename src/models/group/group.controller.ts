@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -61,5 +62,29 @@ export class GroupController {
   @UseGuards(AuthGuard)
   async getGroupById(@Param("groupId") groupId: string) {
     return this.service.getGroupById(groupId);
+  }
+
+  @Patch("/:groupId/activate")
+  @UseGuards(AuthGuard)
+  async activateGroup(@Param("groupId") groupId: string) {
+    return this.service.setActiveState(groupId, true);
+  }
+
+  @Patch("/:groupId/deactivate")
+  @UseGuards(AuthGuard)
+  async deactivateGroup(@Param("groupId") groupId: string) {
+    return this.service.setActiveState(groupId, false);
+  }
+
+  @Patch("/:groupId/share")
+  @UseGuards(AuthGuard)
+  async shareGroup(@Param("groupId") groupId: string) {
+    return this.service.setSharingState(groupId, true);
+  }
+
+  @Patch("/:groupId/unshare")
+  @UseGuards(AuthGuard)
+  async unshareGroup(@Param("groupId") groupId: string) {
+    return this.service.setSharingState(groupId, false);
   }
 }

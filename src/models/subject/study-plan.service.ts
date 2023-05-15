@@ -50,30 +50,36 @@ export class StudyPlanService {
       );
 
       const { topic, order } = data;
-
-      // const existingData = await this.criteriaRepo.fetchAllByPlanId(
-      //   data.studyPlanItemId,
-      // );
-
       const created = [];
       const updated = [];
 
-      for await (const ce of data.criteria) {
-        if (ce.id) {
-          const res = await this.criteriaRepo.update(
-            ce.id,
-            ce.name,
-            ce.coefficient,
-          );
-          updated.push(res);
-        } else {
-          const res = await this.criteriaRepo.create({
-            studyPlanItemId: data.studyPlanItemId,
-            createdBy: userId,
-            name: ce.name,
-            coefficient: ce.coefficient,
-          });
-          created.push(res);
+      if (data.criteria.length === 0) {
+        const newRecord = await this.criteriaRepo.create({
+          studyPlanItemId: data.studyPlanItemId,
+          coefficient: 5,
+          name: "NO_NAME",
+          createdBy: userId,
+        });
+
+        created.push(newRecord);
+      } else {
+        for await (const ce of data.criteria) {
+          if (ce.id) {
+            const res = await this.criteriaRepo.update(
+              ce.id,
+              ce.name,
+              ce.coefficient,
+            );
+            updated.push(res);
+          } else {
+            const res = await this.criteriaRepo.create({
+              studyPlanItemId: data.studyPlanItemId,
+              createdBy: userId,
+              name: ce.name,
+              coefficient: ce.coefficient,
+            });
+            created.push(res);
+          }
         }
       }
 

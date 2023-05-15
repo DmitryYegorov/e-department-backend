@@ -27,6 +27,7 @@ model User {
   StudyPlan          StudyPlan[]
   CriteriaEvaluation CriteriaEvaluation[]
   StudentGrades      StudentGrades[]
+  GroupStatistics    GroupStatistics[]
 
   @@map("user")
 }
@@ -99,9 +100,10 @@ model Classes {
   isActive  Boolean  @default(value: true)
   createdAt DateTime @default(value: now())
 
-  teacher User    @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacher         User              @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  group           Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  subject         Subject           @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  GroupStatistics GroupStatistics[]
 
   @@map("classes")
 }
@@ -132,9 +134,10 @@ model StudyPlan {
   createdAt   DateTime @default(value: now())
   createdBy   String   @db.Uuid
 
-  author             User                 @relation(fields: [createdBy], references: [id])
-  subject            Subject              @relation(fields: [subjectId], references: [id])
-  CriteriaEvaluation CriteriaEvaluation[]
+  author                   User                       @relation(fields: [createdBy], references: [id])
+  subject                  Subject                    @relation(fields: [subjectId], references: [id])
+  CriteriaEvaluation       CriteriaEvaluation[]
+  StudyPlanGroupStatistics StudyPlanGroupStatistics[]
 
   @@map("study-plan")
 }
@@ -152,4 +155,38 @@ model CriteriaEvaluation {
   StudentGrades StudentGrades[]
 
   @@map("criteria-evaluation")
+}
+
+model GroupStatistics {
+  id        String  @id @default(value: uuid()) @db.Uuid
+  classId   String  @db.Uuid
+  comment   String? @db.VarChar(512)
+  createdBy String  @db.Uuid
+
+  classRoom                    Classes                        @relation(fields: [classId], references: [id])
+  author                       User                           @relation(fields: [createdBy], references: [id])
+  StudentGradesGroupStatistics StudentGradesGroupStatistics[]
+  StudyPlanGroupStatistics     StudyPlanGroupStatistics[]
+
+  @@map("group-statistics")
+}
+
+model StudentGradesGroupStatistics {
+  id                String @id @default(value: uuid()) @db.Uuid
+  groupStatisticsId String @db.Uuid
+  studentId         String @db.Uuid
+  summaryGrade      Int    @default(value: 0)
+
+  groupStatisctics GroupStatistics @relation(fields: [groupStatisticsId], references: [id])
+
+  @@map("student-grades-group_statistics")
+}
+
+model StudyPlanGroupStatistics {
+  id                String @id @default(value: uuid()) @db.Uuid
+  groupStatisticsId String @db.Uuid
+  studyPlanId       String @db.Uuid
+
+  groupStatisctics GroupStatistics @relation(fields: [groupStatisticsId], references: [id])
+  studyPlanItem    StudyPlan       @relation(fields: [studyPlanId], references: [id])
 }

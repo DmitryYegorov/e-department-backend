@@ -9,6 +9,60 @@ export class GroupService {
 
   constructor(private readonly groupRepo: GroupRepository) {}
 
+  async setActiveState(groupId: string, status: boolean) {
+    try {
+      this.logger.log(
+        `Invoked setActiveState: ${JSON.stringify({ groupId, status })}`,
+      );
+
+      const updated = await this.groupRepo.update(groupId, {
+        isActive: status,
+      });
+
+      this.logger.log(
+        `Completed setActiveState: ${JSON.stringify({ groupId, updated })}`,
+      );
+
+      return updated;
+    } catch (error) {
+      this.logger.error(
+        `Failed method setActiveStatus: ${JSON.stringify({
+          groupId,
+          status,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
+  async setSharingState(groupId: string, status: boolean) {
+    try {
+      this.logger.log(
+        `Invoked setSharingState: ${JSON.stringify({ groupId, status })}`,
+      );
+
+      const updated = await this.groupRepo.update(groupId, {
+        isShared: status,
+      });
+
+      this.logger.log(
+        `Completed setSharingState: ${JSON.stringify({ groupId, updated })}`,
+      );
+
+      return updated;
+    } catch (error) {
+      this.logger.error(
+        `Failed method setSharingState: ${JSON.stringify({
+          groupId,
+          status,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
   async getGroupById(groupId) {
     try {
       this.logger.log(`Invoked method getGroupById: ${groupId}`);

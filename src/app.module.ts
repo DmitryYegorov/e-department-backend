@@ -9,6 +9,7 @@ import { SubjectModule } from "./models/subject/subject.module";
 import { GroupModule } from "./models/group/group.module";
 import { StudentModule } from "./models/student/student.module";
 import { ClassesModule } from "./models/classes/classes.module";
+import { StatisticsModule } from "./models/statistics/statistics.module";
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ClassesModule } from "./models/classes/classes.module";
     GroupModule,
     StudentModule,
     ClassesModule,
+    StatisticsModule,
   ],
   controllers: [],
   providers: [],

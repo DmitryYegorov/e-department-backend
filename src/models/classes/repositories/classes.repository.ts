@@ -7,6 +7,15 @@ import { Classes } from "@prisma/client";
 export class ClassesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getStudentIdsByClass(classId: string) {
+    const rows = await this.prisma.classes.findUnique({
+      where: { id: classId },
+      select: { group: { select: { Student: { select: { id: true } } } } },
+    });
+
+    return rows.group.Student.map((s) => s.id);
+  }
+
   async create(data: CreateClassType): Promise<Classes> {
     return this.prisma.classes.create({ data });
   }
