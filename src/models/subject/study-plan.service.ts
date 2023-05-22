@@ -49,7 +49,7 @@ export class StudyPlanService {
         })}`,
       );
 
-      const { topic, order } = data;
+      const { topic, order, description } = data;
       const created = [];
       const updated = [];
 
@@ -86,6 +86,7 @@ export class StudyPlanService {
       await this.studyPlanRepo.updatePlanItem(data.studyPlanItemId, {
         topic,
         order,
+        description,
       });
 
       this.logger.log(

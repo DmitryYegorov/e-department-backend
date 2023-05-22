@@ -7,7 +7,10 @@ import { StudyPlan } from "@prisma/client";
 export class StudyPlanRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async updatePlanItem(id: string, data: { topic: string; order: number }) {
+  async updatePlanItem(
+    id: string,
+    data: { topic: string; order: number; description: string },
+  ) {
     return this.prisma.studyPlan.update({ where: { id }, data });
   }
 

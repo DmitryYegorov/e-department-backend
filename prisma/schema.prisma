@@ -98,6 +98,7 @@ model Classes {
   subjectId String   @db.Uuid
   teacherId String   @db.Uuid
   isActive  Boolean  @default(value: true)
+  isShared  Boolean  @default(value: false)
   createdAt DateTime @default(value: now())
 
   teacher         User              @relation(fields: [teacherId], references: [id], onDelete: Cascade)
@@ -151,20 +152,22 @@ model CriteriaEvaluation {
   createdBy       String   @db.Uuid
 
   author        User            @relation(fields: [createdBy], references: [id])
-  studyPlanItem StudyPlan?      @relation(fields: [studyPlanItemId], references: [id])
+  studyPlanItem StudyPlan?      @relation(fields: [studyPlanItemId], references: [id], onDelete: Cascade)
   StudentGrades StudentGrades[]
 
   @@map("criteria-evaluation")
 }
 
 model GroupStatistics {
-  id        String  @id @default(value: uuid()) @db.Uuid
-  classId   String  @db.Uuid
-  comment   String? @db.VarChar(512)
-  createdBy String  @db.Uuid
+  id        String   @id @default(value: uuid()) @db.Uuid
+  classId   String   @db.Uuid
+  title     String   @default(value: "Новая статистика") @db.VarChar(255)
+  comment   String?  @db.VarChar(512)
+  createdBy String   @db.Uuid
+  createdAt DateTime @default(value: now())
 
-  classRoom                    Classes                        @relation(fields: [classId], references: [id])
-  author                       User                           @relation(fields: [createdBy], references: [id])
+  classRoom                    Classes                        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  author                       User                           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   StudentGradesGroupStatistics StudentGradesGroupStatistics[]
   StudyPlanGroupStatistics     StudyPlanGroupStatistics[]
 
@@ -177,7 +180,7 @@ model StudentGradesGroupStatistics {
   studentId         String @db.Uuid
   summaryGrade      Int    @default(value: 0)
 
-  groupStatisctics GroupStatistics @relation(fields: [groupStatisticsId], references: [id])
+  groupStatisctics GroupStatistics @relation(fields: [groupStatisticsId], references: [id], onDelete: Cascade)
 
   @@map("student-grades-group_statistics")
 }
@@ -187,6 +190,6 @@ model StudyPlanGroupStatistics {
   groupStatisticsId String @db.Uuid
   studyPlanId       String @db.Uuid
 
-  groupStatisctics GroupStatistics @relation(fields: [groupStatisticsId], references: [id])
-  studyPlanItem    StudyPlan       @relation(fields: [studyPlanId], references: [id])
+  groupStatisctics GroupStatistics @relation(fields: [groupStatisticsId], references: [id], onDelete: Cascade)
+  studyPlanItem    StudyPlan       @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
 }

@@ -1,4 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { ClassesRepository } from "./repositories/classes.repository";
 import { CreateClassRequestDto } from "./dto/create-class-request.dto";
 import { I18nContext } from "nestjs-i18n";
@@ -9,6 +14,47 @@ export class ClassesService {
   private readonly logger = new Logger(ClassesService.name);
 
   constructor(private readonly classesRepo: ClassesRepository) {}
+
+  async shareClassTable(classId: string, userId: string) {
+    try {
+      this.logger.log(
+        `Invoked method shareClassTable: ${JSON.stringify({
+          classId,
+          userId,
+        })}`,
+      );
+
+      const classesRecord = await this.classesRepo.findOne(classId);
+
+      if (classesRecord.teacherId !== userId) {
+        throw new ForbiddenException(
+          "У вас нет разрешения для данной операции",
+        );
+      }
+
+      const updated = await this.classesRepo.updateClass(
+        { isShared: !classesRecord.isShared },
+        classesRecord.id,
+      );
+
+      this.logger.log(
+        `Completed method shareClassTable: ${JSON.stringify({
+          classesRecord,
+          updated,
+        })}`,
+      );
+      return updated;
+    } catch (error) {
+      this.logger.error(
+        `Failed method shareClassTable: ${JSON.stringify({
+          classId,
+          userId,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
 
   async createNewClass(
     input: CreateClassRequestDto,
@@ -64,6 +110,42 @@ export class ClassesService {
     }
   }
 
+  async getSharedClassTableStatistics(classId: string) {
+    try {
+      this.logger.log(
+        `Invoked method getSharedClassTableStatistics: ${JSON.stringify({
+          classId,
+        })}`,
+      );
+
+      const record = await this.classesRepo.findOne(classId);
+
+      if (!record || !record.isShared) {
+        throw new NotFoundException(
+          "Данные не найдены. Скорее всего Вы пытаесь запросить ресурс, которого не существует либо Вы не имеете к нему доступ",
+        );
+      }
+
+      const res = await this.getClassTableStatistics(classId);
+
+      this.logger.log(
+        `Completed method getSharedClassTableStatistics: ${JSON.stringify({
+          classId,
+          res,
+        })}`,
+      );
+      return res;
+    } catch (error) {
+      this.logger.error(
+        `Failed method getSharedClassTableStatistics: ${JSON.stringify({
+          classId,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
   async getClassTableStatistics(classId: string) {
     try {
       this.logger.log(
@@ -82,17 +164,15 @@ export class ClassesService {
         id: sp.id,
       })).sort((a, b) => a.order - b.order);
 
-      const table = row.group.Student.map((st) => ({
-        studentId: st.id,
-        studentName: `${st.firstName} ${st.middleName} ${st.lastName}`,
-        grade: (function () {
+      const table = row.group.Student.map((st) => {
+        const grade = (function () {
           const groupedPlanByTopicId = _.groupBy(plan, "id");
           const groupedGradesByTopicId = _.groupBy(
             st.StudentGrades,
             "criteria.studyPlanItem.id",
           );
 
-          return {
+          const res = {
             ...Object.fromEntries([
               ...Object.keys(groupedPlanByTopicId).map((topicId) => [
                 topicId,
@@ -100,10 +180,46 @@ export class ClassesService {
               ]),
             ]),
           };
-        })(),
-      }));
+
+          return res;
+        })();
+
+        const summary = (function () {
+          const res: number[] = [];
+          Object.values(grade).forEach((grs) => {
+            // console.log({ GRS: JSON.stringify(grs, null, 2) });
+            if (grs === null) {
+              res.push(0);
+            }
+            if (grs !== null && Array.isArray(grs)) {
+              const summCoef = grs
+                .map((g) => g.criteria.coefficient)
+                .reduce((a, b) => a + b, 0);
+              console.log({ coef: JSON.stringify(grs, null, 2), summCoef });
+              const innerRes = grs
+                .map((g) => (g.value * g.criteria.coefficient) / summCoef)
+                .reduce((a, b) => a + b, 0);
+              res.push(innerRes || 0);
+            }
+          });
+
+          // console.log(JSON.stringify(res, null, 2));
+
+          return +(
+            res.reduce((prev, acc) => prev + acc, 0) / plan.length
+          ).toFixed(0);
+        })();
+
+        return {
+          studentId: st.id,
+          studentName: `${st.firstName} ${st.middleName} ${st.lastName}`,
+          grade,
+          summary,
+        };
+      });
 
       const result = {
+        isShared: row.isShared,
         groupName,
         subjectName,
         table,

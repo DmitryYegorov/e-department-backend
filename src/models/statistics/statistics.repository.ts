@@ -1,10 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateStatisticsByGroupDto } from "./dto/create-statistics-by-group.dto";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class StatisticsRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getAllByClassId(classId: string) {
+    return this.prisma.groupStatistics.findMany({
+      where: { classId: classId },
+      select: {
+        id: true,
+        title: true,
+        comment: true,
+        createdAt: true,
+        // createdBy: true,
+      },
+      orderBy: { createdAt: Prisma.SortOrder.desc },
+    });
+  }
 
   async getStudyPlanItemsByStatisticsId(id: string) {
     return this.prisma.studyPlanGroupStatistics.findMany({
@@ -55,10 +70,10 @@ export class StatisticsRepository {
     input: CreateStatisticsByGroupDto,
     createdBy: string,
   ): Promise<string> {
-    const { comment, classId } = input;
+    const { comment, classId, title } = input;
 
     const createdStatisticsRecord = await this.prisma.groupStatistics.create({
-      data: { classId, comment, createdBy },
+      data: { classId, comment, createdBy, title },
     });
     return createdStatisticsRecord.id;
   }

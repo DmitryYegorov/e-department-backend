@@ -28,6 +28,11 @@ export class StatisticsController {
     return this.service.createStatisticsByGroup(body, userId);
   }
 
+  @Get("/class/:classId")
+  async getStatisticsListByClass(@Param("classId") classId: string) {
+    return this.service.getAllStatisticsByClass(classId);
+  }
+
   @Get("/:id")
   // @UseGuards(AuthGuard)
   async getStatisticsView(@Param("id") id: string) {

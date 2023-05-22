@@ -7,6 +7,14 @@ import { Classes } from "@prisma/client";
 export class ClassesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async updateClass(data: { isShared: boolean }, classId: string) {
+    return this.prisma.classes.update({ where: { id: classId }, data });
+  }
+
+  async findOne(id: string): Promise<Classes> {
+    return this.prisma.classes.findUnique({ where: { id } });
+  }
+
   async getStudentIdsByClass(classId: string) {
     const rows = await this.prisma.classes.findUnique({
       where: { id: classId },
@@ -25,6 +33,7 @@ export class ClassesRepository {
       where: { id: classId },
       select: {
         id: true,
+        isShared: true,
         group: {
           select: {
             id: true,

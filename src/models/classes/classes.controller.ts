@@ -1,10 +1,11 @@
-import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 import {
   Body,
   Controller,
   Get,
   Param,
   Post,
+  Put,
   Request,
   UseGuards,
 } from "@nestjs/common";
@@ -40,7 +41,22 @@ export class ClassesController {
 
   @Get("/:classId/table")
   @UseGuards(AuthGuard)
-  async getClassTable(@Param("classId") classId: string) {
+  async getClassTable(@Param("classId") classId: string, @Request() req: RequestUserPayload) {
     return this.service.getClassTableStatistics(classId);
+  }
+
+  @Get("/shared/:classId/table")
+  async getSharedClassTable(@Param("classId") classId: string) {
+    return this.service.getSharedClassTableStatistics(classId);
+  }
+
+  @Put("/:classId/share")
+  @UseGuards(AuthGuard)
+  @ApiParam({ name: "classId", type: "string", format: "uuid" })
+  async shareTable(
+    @Param("classId") classId: string,
+    @Request() req: RequestUserPayload,
+  ) {
+    return this.service.shareClassTable(classId, req.userId);
   }
 }

@@ -15,6 +15,35 @@ export class StatisticsService {
     private readonly statisticsRepo: StatisticsRepository,
   ) {}
 
+  async getAllStatisticsByClass(userId: string) {
+    try {
+      this.logger.log(
+        `Invoked method getAllStatisticsByClass: ${JSON.stringify({
+          userId,
+        })}`,
+      );
+
+      const res = await this.statisticsRepo.getAllByClassId(userId);
+
+      this.logger.log(
+        `Completed method getAllStatisticsByClass: ${JSON.stringify({
+          userId,
+          list: res,
+        })}`,
+      );
+
+      return { list: res };
+    } catch (error) {
+      this.logger.log(
+        `Failed method getAllStatisticsByUserId: ${JSON.stringify({
+          userId,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
   async getStatisticsView(statisticsId: string) {
     try {
       this.logger.log(`Invoked method getStatisticsView: ${statisticsId}`);
