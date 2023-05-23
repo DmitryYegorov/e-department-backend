@@ -9,6 +9,10 @@ import { UserUpdateOptionsType } from "./types/user-update-options.type";
 export class AuthRepo {
   constructor(private readonly prisma: PrismaService) {}
 
+  async delete(id: string) {
+    return this.prisma.user.delete({ where: { id } });
+  }
+
   async register(input: RegisterInputType): Promise<User> {
     return this.prisma.user.create({ data: input });
   }

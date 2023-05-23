@@ -18,11 +18,11 @@ export class AuthRegistrationRequestDto {
   @IsOptional()
   @ApiProperty({ type: "string", example: "Anatolievich" })
   readonly lastName?: string;
-  @IsEmail()
+  @IsEmail({}, {message: "Некорректный e-mail"})
   @ApiProperty({ type: "string", example: "teacher@belstu.by" })
   readonly email: string;
-  @MinLength(6)
-  @MaxLength(255)
+  @MinLength(6, {message: "Пароль должен быть длинее 6 символов"})
+  @MaxLength(255, {message: "Слишком длинный пароль, Вы не запомните"})
   @ApiProperty({ type: "string", example: "A.%^2d8!!qq1e" })
   readonly password: string;
 }

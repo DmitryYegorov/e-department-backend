@@ -1,8 +1,11 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
-  Logger, NotFoundException,
-  UnauthorizedException
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { AuthRepo } from "../repositories/auth.repo";
 import { AuthRegistrationRequestDto } from "../dto/auth-registration-request.dto";
@@ -75,7 +78,7 @@ export class AuthService {
       const user = await this.authRepo.getUserByEmail({ email });
 
       if (!user) {
-        throw new NotFoundException(i18n.t("auth.errorMessages.userNotFound"))
+        throw new NotFoundException(i18n.t("auth.errorMessages.userNotFound"));
       }
 
       const passwordMatches = await bcrypt.compare(password, user.password);
@@ -159,14 +162,29 @@ export class AuthService {
         fullName: `${entity.firstName} ${entity.middleName} ${entity.lastName}`,
         activationCode,
       };
-      await this.mailService.sendMail<WelcomeNewUserContext>(
-        {
-          email: entity.email,
-          templateId: "welcome-new-user",
-          subject: "Welcome to the E-Department!",
-        },
-        mailContext,
-      );
+      await this.mailService
+        .sendMail<WelcomeNewUserContext>(
+          {
+            email: entity.email,
+            templateId: "welcome-new-user",
+            subject: "Welcome to the E-Department!",
+          },
+          mailContext,
+        )
+        .catch((err) => {
+          this.authRepo.delete(entity.id);
+          throw new HttpException(
+            "Прозошла ошибка на сервере при проверке Вашей электронной почты. попробуйте позже",
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        });
+
+      return {
+        firstName: entity.firstName,
+        middleName: entity.middleName,
+        lastName: entity.lastName,
+        email: entity.email,
+      };
     } catch (error) {
       this.logger.error(
         `Failed method register(): ${JSON.stringify({
@@ -191,7 +209,9 @@ export class AuthService {
       const user = await this.authRepo.getUserById(userId);
 
       if (!user) {
-        throw new UnauthorizedException(i18n.t("auth.errorMessages.userNotAuth"))
+        throw new UnauthorizedException(
+          i18n.t("auth.errorMessages.userNotAuth"),
+        );
       }
 
       this.logger.log(
