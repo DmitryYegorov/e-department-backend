@@ -1,11 +1,29 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { CreateGroupEntityType } from "./types/create-group-entity.type";
-import { Group, User, Faculty } from "@prisma/client";
+import { Group, User, Faculty, Student } from "@prisma/client";
 
 @Injectable()
 export class GroupRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findAllByFaculty(
+    facultyId: string,
+  ): Promise<
+    (Group & { created: User; faculty: Faculty | null; Student: Student[] })[]
+  > {
+    return this.prisma.group.findMany({
+      where: {
+        isActive: true,
+        facultyId,
+      },
+      include: {
+        created: true,
+        faculty: true,
+        Student: true,
+      },
+    });
+  }
 
   async update(id: string, data: Partial<Group>) {
     return this.prisma.group.update({ where: { id }, data });
@@ -16,7 +34,7 @@ export class GroupRepository {
   }
 
   async findAll(): Promise<
-    (Group & { created: User; faculty: Faculty | null })[]
+    (Group & { created: User; faculty: Faculty | null; Student: Student[] })[]
   > {
     return this.prisma.group.findMany({
       where: {
@@ -25,6 +43,7 @@ export class GroupRepository {
       include: {
         created: true,
         faculty: true,
+        Student: true,
       },
     });
   }

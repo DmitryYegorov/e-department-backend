@@ -17,4 +17,7 @@ export class CreateNewGroupRequestDto {
   readonly subGroup: number;
   @ApiProperty()
   readonly course: number;
+
+  @ApiProperty({ type: "string", format: "uuid", required: false })
+  readonly facultyId?: string;
 }

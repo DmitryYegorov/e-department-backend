@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from "@nestjs/common";
@@ -39,8 +40,8 @@ export class GroupController {
 
   @Get()
   @UseGuards(AuthGuard)
-  async getAllGroups() {
-    return this.service.getAllActiveGroups();
+  async getAllGroups(@Query("facultyId") facultyId: string) {
+    return this.service.getAllActiveGroups(facultyId);
   }
 
   @Get("/my")

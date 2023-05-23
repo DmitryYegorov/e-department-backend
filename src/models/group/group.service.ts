@@ -79,10 +79,12 @@ export class GroupService {
     }
   }
 
-  async getAllActiveGroups() {
+  async getAllActiveGroups(facultyId: string | undefined) {
     try {
       this.logger.log(`Invoked method getAllActiveGroups`);
-      const list = await this.groupRepo.findAll();
+      const list = facultyId
+        ? await this.groupRepo.findAllByFaculty(facultyId)
+        : await this.groupRepo.findAll();
 
       this.logger.log(
         `Completed method getAllActiveGroups: ${JSON.stringify(list)}`,
@@ -99,6 +101,8 @@ export class GroupService {
           facultyShortName: i.faculty?.shortName,
           facultyId: i.faculty?.id,
           createdName: `${i.created.firstName} ${i.created.middleName} ${i.created.lastName}`,
+          studentsCount: i.Student.length,
+          facultyName: i.faculty?.name,
         })),
       };
     } catch (error) {

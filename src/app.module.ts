@@ -10,6 +10,7 @@ import { GroupModule } from "./models/group/group.module";
 import { StudentModule } from "./models/student/student.module";
 import { ClassesModule } from "./models/classes/classes.module";
 import { StatisticsModule } from "./models/statistics/statistics.module";
+import { FacultyModule } from "./models/faculty/faculty.module";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { StatisticsModule } from "./models/statistics/statistics.module";
     StudentModule,
     ClassesModule,
     StatisticsModule,
+    FacultyModule,
   ],
   controllers: [],
   providers: [],
