@@ -12,4 +12,7 @@ export class AuthLoginResponseDto {
     description: "Identifier of authorized user",
   })
   readonly userId: string;
+
+  @ApiProperty()
+  readonly type: string;
 }

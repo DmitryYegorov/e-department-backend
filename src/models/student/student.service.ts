@@ -10,6 +10,21 @@ export class StudentService {
 
   constructor(private readonly studentRepo: StudentRepository) {}
 
+  async getAll() {
+    try {
+      this.logger.log(`Invoked getAll`);
+
+      const list = await this.studentRepo.findAll();
+
+      this.logger.log(`Completed getAll: ${JSON.stringify({ list })}`);
+
+      return { list };
+    } catch (e) {
+      this.logger.log(`Failed method getAll: ${JSON.stringify(e)}`);
+      throw e;
+    }
+  }
+
   async updateStudentInfo(studentId: string, data: any) {
     try {
       this.logger.log(

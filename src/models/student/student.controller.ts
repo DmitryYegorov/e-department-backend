@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { StudentService } from "./student.service";
@@ -26,6 +27,17 @@ import { GetSubjectListResponseDto } from "../subject/dto/get-subject-list-respo
 @Controller("/students")
 export class StudentController {
   constructor(private readonly service: StudentService) {}
+
+  @Get()
+  @UseGuards(AuthGuard)
+  async getAll(
+    @Query("facultyId") facultyId: string,
+    @Query("course") course: number,
+    @Query("group") group: number,
+    @Query("subGroup") subGroup: number,
+  ) {
+    return this.service.getAll();
+  }
 
   @Post()
   @ApiBearerAuth()

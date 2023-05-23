@@ -71,7 +71,7 @@ export class AuthService {
       this.logger.log(
         `Invoked method login(): ${JSON.stringify({
           ...input,
-          password: null,
+          // password: null,
         })}`,
       );
 
@@ -83,10 +83,14 @@ export class AuthService {
 
       const passwordMatches = await bcrypt.compare(password, user.password);
 
-      if (!passwordMatches || user.activationCode) {
+      if (!passwordMatches) {
         throw new UnauthorizedException(
           i18n.t("auth.errorMessages.invalidCredentials"),
         );
+      }
+
+      if (user.activationCode !== null) {
+        throw new UnauthorizedException("Ваш аккаунт пока не активирован.");
       }
 
       const [access, refresh] = await Promise.all([
@@ -106,7 +110,7 @@ export class AuthService {
         ),
       ]);
 
-      return { access, refresh, userId: user.id };
+      return { access, refresh, userId: user.id, type: user.type };
     } catch (error) {
       this.logger.error(
         `Failed method login(): ${JSON.stringify({
