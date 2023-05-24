@@ -7,8 +7,57 @@ import { CreateStudentType } from "./types/create-student.type";
 export class StudentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getStudentProfile(id: string) {
+    return this.prisma.student.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        StudentGrades: {
+          select: {
+            id: true,
+            criteria: {
+              select: {
+                id: true,
+                name: true,
+                coefficient: true,
+                studyPlanItem: true,
+              },
+            },
+            value: true,
+            comment: true,
+            done: true,
+            createdAt: true,
+          },
+        },
+        group: {
+          select: {
+            id: true,
+            group: true,
+            course: true,
+            subGroup: true,
+            Classes: {
+              select: {
+                subject: true,
+              },
+            },
+            faculty: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   async findAll(
     options: Partial<{
+      fullName: string;
       facultyId: string;
       course: number;
       group: number;
@@ -17,15 +66,30 @@ export class StudentRepository {
   ): Promise<Student[]> {
     let where = {};
 
+    if (options.fullName) {
+      const [firstName, middleName, lastName] = options.fullName.split(" ");
+      where = {
+        ...where,
+        firstName: { startsWith: firstName },
+        middleName: { startsWith: middleName },
+        lastName: { startsWith: lastName },
+      };
+    }
+
     if (options.facultyId) {
-      where = { ...where, group: { facultyId: options.facultyId } };
+      where = { ...where, group: { AND: [{ facultyId: options.facultyId }] } };
     }
     if (options.course) {
-      where = { ...where, group: { course: options.course } };
+      where = { ...where, group: { course: +options.course } };
+    }
+    if (options.group) {
+      where = { ...where, group: { group: +options.group } };
     }
     if (options.subGroup) {
-      where = { ...where, group: { subGroup: options.subGroup } };
+      where = { ...where, group: { subGroup: +options.subGroup } };
     }
+
+    console.log({ where });
 
     return this.prisma.student.findMany({
       where,

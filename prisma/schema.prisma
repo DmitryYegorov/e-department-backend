@@ -48,9 +48,10 @@ model Subject {
 }
 
 model Faculty {
-  id        String  @id @default(value: uuid()) @db.Uuid()
-  name      String  @db.VarChar(255)
-  shortName String  @db.VarChar(125)
+  id        String   @id @default(value: uuid()) @db.Uuid()
+  name      String   @db.VarChar(255)
+  shortName String   @db.VarChar(125)
+  createdAt DateTime @default(value: now())
   Group     Group[]
 
   @@map("faculty")

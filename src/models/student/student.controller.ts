@@ -28,15 +28,34 @@ import { GetSubjectListResponseDto } from "../subject/dto/get-subject-list-respo
 export class StudentController {
   constructor(private readonly service: StudentService) {}
 
+  @Get("/profile/:studentId")
+  @UseGuards(AuthGuard)
+  async getStudentProfile(@Param("studentId") studentId: string) {
+    return this.service.getStudentProfile(studentId);
+  }
+
   @Get()
   @UseGuards(AuthGuard)
   async getAll(
+    @Query("fullName") fullName: string,
     @Query("facultyId") facultyId: string,
     @Query("course") course: number,
     @Query("group") group: number,
     @Query("subGroup") subGroup: number,
   ) {
-    return this.service.getAll();
+    const params = { facultyId, course, group, subGroup, fullName };
+    console.log({ params });
+    const query =
+      Object.fromEntries(
+        Object.keys(params).map((key) => {
+          if (params[key]) {
+            return [key, params[key]];
+          }
+          return [];
+        }),
+      ) || {};
+
+    return this.service.getAll(query);
   }
 
   @Post()

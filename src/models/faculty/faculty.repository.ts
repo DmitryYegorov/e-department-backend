@@ -15,12 +15,18 @@ export class FacultyRepository {
     return this.prisma.faculty.create({ data });
   }
 
+  async update(data: CreateFacultyRecord, id: string): Promise<Faculty> {
+    return this.prisma.faculty.update({ data, where: { id } });
+  }
+
   async find(id: string): Promise<Faculty> {
     return this.prisma.faculty.findUnique({ where: { id } });
   }
 
   async findAll(): Promise<Faculty[]> {
-    return this.prisma.faculty.findMany({ orderBy: { name: "asc" } });
+    return this.prisma.faculty.findMany({
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   async remove(id: string) {
