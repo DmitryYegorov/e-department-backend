@@ -136,8 +136,8 @@ model StudyPlan {
   createdAt   DateTime @default(value: now())
   createdBy   String   @db.Uuid
 
-  author                   User                       @relation(fields: [createdBy], references: [id])
-  subject                  Subject                    @relation(fields: [subjectId], references: [id])
+  author                   User                       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  subject                  Subject                    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   CriteriaEvaluation       CriteriaEvaluation[]
   StudyPlanGroupStatistics StudyPlanGroupStatistics[]
 
@@ -152,7 +152,7 @@ model CriteriaEvaluation {
   createdAt       DateTime @default(value: now())
   createdBy       String   @db.Uuid
 
-  author        User            @relation(fields: [createdBy], references: [id])
+  author        User            @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   studyPlanItem StudyPlan?      @relation(fields: [studyPlanItemId], references: [id], onDelete: Cascade)
   StudentGrades StudentGrades[]
 

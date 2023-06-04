@@ -45,6 +45,17 @@ export class GroupRepository {
         faculty: true,
         Student: true,
       },
+      orderBy: [
+        {
+          course: "asc",
+        },
+        {
+          group: "asc",
+        },
+        {
+          subGroup: "asc",
+        },
+      ],
     });
   }
 

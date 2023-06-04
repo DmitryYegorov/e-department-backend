@@ -7,6 +7,55 @@ import { Prisma } from "@prisma/client";
 export class StatisticsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async delete(id: string) {
+    return this.prisma.groupStatistics.delete({ where: { id } });
+  }
+
+  async getStatisticsInfo(id: string) {
+    return this.prisma.groupStatistics.findUnique({
+      where: { id },
+      include: { classRoom: true },
+    });
+  }
+
+  async getGroupByStatisticsIc(id: string) {
+    const statistics = await this.prisma.groupStatistics.findUnique({
+      where: { id },
+      select: {
+        classRoom: {
+          select: {
+            group: {
+              include: {
+                faculty: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return statistics.classRoom.group;
+  }
+
+  async getSubjectByStatisticsId(id: string) {
+    const statistics = await this.prisma.groupStatistics.findUnique({
+      where: { id },
+      include: {
+        classRoom: {
+          include: {
+            subject: {
+              include: {
+                teacher: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return statistics.classRoom.subject;
+  }
+
   async getAllByClassId(classId: string) {
     return this.prisma.groupStatistics.findMany({
       where: { classId: classId },

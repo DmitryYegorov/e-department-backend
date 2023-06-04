@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -37,5 +38,11 @@ export class StatisticsController {
   // @UseGuards(AuthGuard)
   async getStatisticsView(@Param("id") id: string) {
     return this.service.getStatisticsView(id);
+  }
+
+  @Delete("/:id")
+  @UseGuards(AuthGuard)
+  async deleteStatistics(@Param("id") statisticsId: string) {
+    return this.service.deleteStatisticsById(statisticsId);
   }
 }

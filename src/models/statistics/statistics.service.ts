@@ -15,6 +15,30 @@ export class StatisticsService {
     private readonly statisticsRepo: StatisticsRepository,
   ) {}
 
+  async deleteStatisticsById(statisticsId: string) {
+    try {
+      this.logger.log(
+        `Invoked method deleteStatisticsById: ${JSON.stringify({
+          statisticsId,
+        })}`,
+      );
+
+      const deleted = await this.statisticsRepo.delete(statisticsId);
+
+      this.logger.log(
+        `Completed method deleteStatisticsById: ${JSON.stringify({ deleted })}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed method deleteStatisticsById: ${JSON.stringify({
+          statisticsId,
+          error,
+        })}`,
+      );
+      throw error;
+    }
+  }
+
   async getAllStatisticsByClass(userId: string) {
     try {
       this.logger.log(
@@ -48,10 +72,14 @@ export class StatisticsService {
     try {
       this.logger.log(`Invoked method getStatisticsView: ${statisticsId}`);
 
-      const [studentGrades, topics] = await Promise.all([
-        this.statisticsRepo.getStudentSummaryGradesByStatistic(statisticsId),
-        this.statisticsRepo.getStudyPlanItemsByStatisticsId(statisticsId),
-      ]);
+      const [statistics, studentGrades, topics, subject, groupInfo] =
+        await Promise.all([
+          this.statisticsRepo.getStatisticsInfo(statisticsId),
+          this.statisticsRepo.getStudentSummaryGradesByStatistic(statisticsId),
+          this.statisticsRepo.getStudyPlanItemsByStatisticsId(statisticsId),
+          this.statisticsRepo.getSubjectByStatisticsId(statisticsId),
+          this.statisticsRepo.getGroupByStatisticsIc(statisticsId),
+        ]);
 
       this.logger.log(
         `Completed method getStatisticsView: ${JSON.stringify(
@@ -61,7 +89,21 @@ export class StatisticsService {
         )}`,
       );
 
-      return { studentGrades, topics: topics.map((t) => t.studyPlanItem) };
+      const groupWithSubgroup = `${groupInfo.group} - ${groupInfo.subGroup}`;
+      const facultyGroup = `${[
+        groupInfo.faculty?.shortName || null,
+        groupInfo.course,
+      ]
+        .filter((i) => !!i)
+        .join(", ")} курс`;
+
+      return {
+        ...statistics,
+        studentGrades,
+        topics: topics.map((t) => t.studyPlanItem),
+        subject,
+        groupName: `${groupWithSubgroup} (${facultyGroup})`,
+      };
     } catch (error) {
       this.logger.error(
         `Failed method getStatisticsView: ${JSON.stringify({ error })}`,

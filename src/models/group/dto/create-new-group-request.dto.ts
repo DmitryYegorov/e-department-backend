@@ -20,4 +20,7 @@ export class CreateNewGroupRequestDto {
 
   @ApiProperty({ type: "string", format: "uuid", required: false })
   readonly facultyId?: string;
+
+  @ApiProperty()
+  readonly description?: string | null;
 }

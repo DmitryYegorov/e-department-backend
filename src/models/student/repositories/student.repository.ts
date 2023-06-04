@@ -7,6 +7,10 @@ import { CreateStudentType } from "./types/create-student.type";
 export class StudentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getStudentsClasses(id: string) {
+
+  }
+
   async getStudentProfile(id: string) {
     return this.prisma.student.findUnique({
       where: { id },
