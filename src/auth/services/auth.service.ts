@@ -93,6 +93,12 @@ export class AuthService {
         throw new UnauthorizedException("Ваш аккаунт пока не активирован.");
       }
 
+      if (!user.isActive) {
+        throw new UnauthorizedException(
+          "Администратор закрыл для Вас доступ к системе",
+        );
+      }
+
       const [access, refresh] = await Promise.all([
         this.jwtService.signAsync(
           { userId: user.id },
