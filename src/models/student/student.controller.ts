@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -95,5 +96,10 @@ export class StudentController {
     @I18n() i18n: I18nContext,
   ) {
     return this.service.getAllByGroupId(groupId, i18n);
+  }
+
+  @Delete("/:studentId")
+  async deleteStudent(@Param("studentId") studentId: string) {
+    return this.service.deleteStudent(studentId);
   }
 }

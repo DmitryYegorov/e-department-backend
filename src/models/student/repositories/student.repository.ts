@@ -7,8 +7,10 @@ import { CreateStudentType } from "./types/create-student.type";
 export class StudentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getStudentsClasses(id: string) {
+  async getStudentsClasses(id: string) {}
 
+  async delete(id: string) {
+    return this.prisma.student.delete({ where: { id } });
   }
 
   async getStudentProfile(id: string) {

@@ -10,6 +10,20 @@ export class StudentService {
 
   constructor(private readonly studentRepo: StudentRepository) {}
 
+  async deleteStudent(studentId: string) {
+    try {
+      this.logger.log(`Invoked method deleteStudent`);
+
+      const res = await this.studentRepo.delete(studentId);
+
+      this.logger.log(`Completed: ${JSON.stringify(res)}`);
+      return res;
+    } catch (e) {
+      this.logger.error(`Failed ${JSON.stringify(e)}`);
+      throw e;
+    }
+  }
+
   async getStudentProfile(studentId: string) {
     try {
       this.logger.log(
