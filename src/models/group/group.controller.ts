@@ -44,6 +44,11 @@ export class GroupController {
     return this.service.getAllActiveGroups(facultyId);
   }
 
+  @Get("/admin")
+  async getAllAdminGroups() {
+    return this.service.getAllAdminGroups();
+  }
+
   @Get("/my")
   @UseGuards(AuthGuard)
   @ApiBearerAuth()

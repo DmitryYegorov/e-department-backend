@@ -14,7 +14,7 @@ export class AuthRepo {
   }
 
   async register(input: RegisterInputType): Promise<User> {
-    return this.prisma.user.create({ data: input });
+    return this.prisma.user.create({ data: { ...input, isActive: false } });
   }
 
   async checkExistingEmail(email: string): Promise<boolean> {

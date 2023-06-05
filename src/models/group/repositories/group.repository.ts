@@ -33,6 +33,27 @@ export class GroupRepository {
     return this.prisma.group.findUnique({ where: { id } });
   }
 
+  async findMany() {
+    return this.prisma.group.findMany({
+      include: {
+        created: true,
+        faculty: true,
+        Student: true,
+      },
+      orderBy: [
+        {
+          course: "asc",
+        },
+        {
+          group: "asc",
+        },
+        {
+          subGroup: "asc",
+        },
+      ],
+    });
+  }
+
   async findAll(): Promise<
     (Group & { created: User; faculty: Faculty | null; Student: Student[] })[]
   > {

@@ -11,6 +11,7 @@ import { StudentModule } from "./models/student/student.module";
 import { ClassesModule } from "./models/classes/classes.module";
 import { StatisticsModule } from "./models/statistics/statistics.module";
 import { FacultyModule } from "./models/faculty/faculty.module";
+import { UsersModule } from "./models/users/users.module";
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { FacultyModule } from "./models/faculty/faculty.module";
     ClassesModule,
     StatisticsModule,
     FacultyModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],

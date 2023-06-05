@@ -9,6 +9,34 @@ export class GroupService {
 
   constructor(private readonly groupRepo: GroupRepository) {}
 
+  async getAllAdminGroups() {
+    try {
+      this.logger.log(`Invoked method getAllAdminGroups`);
+
+      const list = await this.groupRepo.findMany();
+
+      return {
+        list: list.map((i) => ({
+          id: i.id,
+          name: i.name,
+          course: i.course,
+          group: i.group,
+          subGroup: i.subGroup,
+          isShared: i.isShared,
+          createdId: i.createdBy,
+          facultyShortName: i.faculty?.shortName,
+          facultyId: i.faculty?.id,
+          createdName: `${i.created.firstName} ${i.created.middleName} ${i.created.lastName}`,
+          studentsCount: i.Student.length,
+          facultyName: i.faculty?.name,
+        })),
+      };
+    } catch (error) {
+      this.logger.error(`Failed ${JSON.stringify(error)}`);
+      throw error;
+    }
+  }
+
   async setActiveState(groupId: string, status: boolean) {
     try {
       this.logger.log(
